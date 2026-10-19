@@ -1,0 +1,52 @@
+name: Quantum Clock
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  precision:
+    name: Engine tests, precision certificate, Matrix audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Engine tests (includes the 48-check certificate)
+        run: node --test tests/engine.test.js
+
+      - name: Precision certificate
+        run: node tools/qclock-cli.js certificate --out "$RUNNER_TEMP/certificate.json" | tee "$RUNNER_TEMP/certificate.txt"
+
+      - name: Check out The Matrix (site app, current main)
+        uses: actions/checkout@v7
+        with:
+          repository: nicholaskouns-create/nicholaskouns-create.github.io
+          path: .matrix-site
+          sparse-checkout: matrix-quantum-simulator
+
+      - name: Matrix audit
+        run: node audit/site_matrix_audit.js .matrix-site/matrix-quantum-simulator > "$RUNNER_TEMP/site-matrix-audit.json"
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Quantum Clock"
+            echo
+            echo '```'
+            tail -n 1 "$RUNNER_TEMP/certificate.txt" 2>/dev/null || echo "certificate did not run"
+            echo '```'
+            echo
+            echo "Matrix audit findings, run on the Matrix's current source:"
+            echo
+            node -e "const r=JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP+'/site-matrix-audit.json','utf8'));for(const f of r.findings)console.log('- '+f.id+' ['+f.status+', '+f.severity+']: '+f.title)" 2>/dev/null || echo "- audit did not run"
+          } >> "$GITHUB_STEP_SUMMARY"

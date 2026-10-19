@@ -1,0 +1,34 @@
+name: TQGNN
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Spacetime runner, TQGNN validator, reference values
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Canonical spacetime runner (26 checks)
+        run: |
+          python validation/e47_spacetime_prima_facie.py | tee spacetime.txt
+          grep -q "PRIMA_FACIE_SPACETIME_PASS" spacetime.txt
+
+      - name: TQGNN validator (36 checks)
+        run: python validation/tqgnn_validation.py
+
+      - name: The clock's reference values match data/golden.json
+        run: python tools/golden.py --check

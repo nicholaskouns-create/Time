@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d0b">
+<title>The Quantum Clock</title>
+<meta name="description" content="A qubit held in the protected 47-dimensional sector of V2⊗3 that reads its own proper time, keeps it through leak and recovery, and networks with other clocks on their own worldlines. Every number is recomputed in your browser and certified against a Python reference.">
+<link rel="canonical" href="https://nicholaskouns-create.github.io/Time/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&family=STIX+Two+Text:ital@0;1&display=swap">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+@font-face { font-family: "QC Math"; src: local("STIX Two Math"), local("STIXTwoMath-Regular"), local("STIXTwoMath"), local("Cambria Math"), local("CambriaMath"), local("Apple Symbols"), local("AppleSymbols"), local("Segoe UI Symbol"), local("SegoeUISymbol"), local("Noto Sans Math"), local("NotoSansMath-Regular"), local("Latin Modern Math"), local("LatinModernMath-Regular"), local("TeXGyrePagella-Regular"); unicode-range: U+2295-2299; }
+/* Babylonian Dark house style (as The Moment Ladder). One reading column; the clock face and its panel sit side by side from 960px. */
+:root {
+  --ground: #0b0d0b; --slab: #111511; --slab-2: #171c17; --rule: #273027;
+  --ink: #ebe5d2; --ink-2: #b4af9d; --ink-3: #7f8375;
+  --gold: #e3bf66; --gold-soft: rgba(227, 191, 102, 0.15); --gold-line: rgba(227, 191, 102, 0.5);
+  --verd: #7fd3a8; --verd-soft: rgba(127, 211, 168, 0.13);
+  --rose: #d98c7a; --rose-soft: rgba(217, 140, 122, 0.14);
+  --serif: "QC Math", "EB Garamond", "STIX Two Text", Garamond, "Iowan Old Style", "Times New Roman", serif;
+  --math: "QC Math", "EB Garamond", "STIX Two Text", "Cambria Math", "Noto Sans Math", serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --t-hero: clamp(2.75rem, 10vw, 5rem); --t-h2: clamp(1.75rem, 5vw, 2.4rem); --t-lead: clamp(1.25rem, 3.6vw, 1.5rem);
+  --t-body: 1.1875rem; --t-small: 1rem; --t-label: 0.72rem; --t-data: 0.84rem;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ground: #eceee6; --slab: #e3e6dc; --slab-2: #d9ddd0; --rule: #c3c8b9;
+    --ink: #151914; --ink-2: #43493f; --ink-3: #6b7065;
+    --gold: #85620e; --gold-soft: rgba(133, 98, 14, 0.12); --gold-line: rgba(133, 98, 14, 0.45);
+    --verd: #1f6b46; --verd-soft: rgba(31, 107, 70, 0.1); --rose: #9a3f2c; --rose-soft: rgba(154, 63, 44, 0.1);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --ground: #eceee6; --slab: #e3e6dc; --slab-2: #d9ddd0; --rule: #c3c8b9;
+  --ink: #151914; --ink-2: #43493f; --ink-3: #6b7065;
+  --gold: #85620e; --gold-soft: rgba(133, 98, 14, 0.12); --gold-line: rgba(133, 98, 14, 0.45);
+  --verd: #1f6b46; --verd-soft: rgba(31, 107, 70, 0.1); --rose: #9a3f2c; --rose-soft: rgba(154, 63, 44, 0.1);
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body { background: var(--ground); color: var(--ink); font: 400 var(--t-body)/1.55 var(--serif); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+a { color: var(--gold); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
+.wrap { max-width: 74rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.band { padding-block: clamp(3rem, 8vw, 5.5rem); border-top: 1px solid var(--rule); }
+.prose { max-width: 40rem; }
+.prose > * + * { margin-top: 1rem; }
+p { margin: 0; }
+h1, h2, h3 { margin: 0; font-weight: 500; text-wrap: balance; }
+h2 { font-size: var(--t-h2); line-height: 1.12; letter-spacing: -0.01em; }
+h3 { font-size: 1.3rem; line-height: 1.25; }
+.eyebrow { font: 500 var(--t-label)/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; align-items: center; }
+.head { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; margin-bottom: 2rem; max-width: 44rem; }
+.m, .math { font-family: var(--math); }
+i.v { font-family: var(--math); font-style: italic; }
+sub, sup { font-size: 0.68em; line-height: 0; }
+.nowrap { white-space: nowrap; }
+.mono { font-family: var(--mono); font-size: var(--t-data); font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-3); }
+.ev { display: inline-flex; align-items: center; gap: 0.35em; font: 500 0.68rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; padding: 0.38em 0.6em; border-radius: 2px; white-space: nowrap; }
+.ev.e0 { color: var(--gold); background: var(--gold-soft); border: 1px solid var(--gold-line); }
+.ev.e1 { color: var(--verd); background: var(--verd-soft); border: 1px dashed var(--verd); }
+.ev.e2 { color: var(--ink-2); border: 1px dashed var(--ink-3); }
+.ev.open { color: var(--ink-3); border: 1px dotted var(--ink-3); }
+.ev.fail { color: var(--rose); background: var(--rose-soft); border: 1px solid var(--rose); }
+
+/* hero */
+.hero { padding-block: clamp(2.5rem, 7vw, 4.5rem) clamp(2rem, 5vw, 3rem); }
+.hero h1 { font-size: var(--t-hero); line-height: 0.98; font-style: italic; font-weight: 500; letter-spacing: -0.015em; margin-top: 1rem; }
+.lead { font-size: var(--t-lead); line-height: 1.45; max-width: 38rem; margin-top: 1.4rem; }
+.lead + p { margin-top: 1rem; max-width: 40rem; color: var(--ink-2); }
+.credits { margin-top: 2rem; display: grid; gap: 0.35rem; font: 400 0.78rem/1.5 var(--mono); color: var(--ink-3); grid-template-columns: max-content 1fr; column-gap: 1rem; }
+.credits dt { letter-spacing: 0.1em; text-transform: uppercase; }
+.credits dd { margin: 0; color: var(--ink-2); }
+@media (max-width: 520px) { .credits { grid-template-columns: minmax(0, 1fr); } .credits dd { margin-bottom: 0.4rem; } }
+.toc { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font: 500 0.78rem/1.4 var(--mono); letter-spacing: 0.06em; }
+.toc a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
+.toc a:hover { color: var(--gold); border-color: var(--gold-line); }
+.certline { margin-top: 1.6rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; font: 400 0.8rem/1.5 var(--mono); color: var(--ink-2); }
+.certline b { color: var(--verd); font-weight: 500; }
+.certline b.bad { color: var(--rose); }
+.progress { width: 7rem; height: 3px; background: var(--rule); position: relative; overflow: hidden; border-radius: 2px; }
+.progress span { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--gold); transition: width 120ms linear; }
+
+/* controls */
+.btn { font: 500 0.76rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); background: transparent; border: 1px solid var(--gold-line); padding: 0.8rem 1rem; border-radius: 2px; cursor: pointer; min-height: 44px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
+.btn:hover { background: var(--gold-soft); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.quiet { color: var(--ink-2); border-color: var(--rule); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip { font: 400 0.76rem/1.2 var(--mono); color: var(--ink-2); background: var(--slab); border: 1px solid var(--rule); border-radius: 2px; padding: 0.55rem 0.7rem; cursor: pointer; min-height: 40px; }
+.chip:hover { border-color: var(--gold-line); color: var(--ink); }
+.chip[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
+.ctl { display: grid; gap: 0.35rem; min-width: 0; }
+.ctl label, .ctl .lab { font: 500 var(--t-label)/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; gap: 0.5rem; }
+.ctl label output, .ctl .lab output { color: var(--ink); letter-spacing: 0.02em; text-transform: none; font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--gold); min-height: 32px; background: transparent; }
+select, input[type=number], input[type=text], textarea { font: 400 0.9rem/1.3 var(--mono); color: var(--ink); background: var(--slab); border: 1px solid var(--rule); border-radius: 2px; padding: 0.55rem 0.6rem; min-height: 40px; width: 100%; min-width: 0; }
+textarea { min-height: 6rem; resize: vertical; }
+.row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.grid-ctl { display: grid; gap: 1rem 1.25rem; grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); align-items: end; }
+.status-line { font: 400 0.78rem/1.5 var(--mono); color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; min-height: 1.5rem; }
+.status-line .ok { color: var(--verd); } .status-line .bad { color: var(--rose); }
+
+/* the instrument */
+.instrument { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.75rem; align-items: start; }
+@media (min-width: 960px) { .instrument { grid-template-columns: minmax(0, 27rem) minmax(0, 1fr); gap: 2.5rem; } .face-col { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1rem); } }
+.face-col { display: grid; gap: 0.9rem; min-width: 0; }
+.face-wrap { position: relative; width: 100%; max-width: 27rem; aspect-ratio: 1 / 1; }
+.face-wrap canvas { width: 100%; height: 100%; display: block; }
+.face-cap { font-size: var(--t-small); color: var(--ink-3); line-height: 1.45; max-width: 27rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font: 400 0.74rem/1.4 var(--mono); color: var(--ink-3); }
+.legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; }
+.panel { display: grid; gap: 1.4rem; min-width: 0; }
+.readout { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 2px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 760px) { .readout { grid-template-columns: repeat(3, minmax(0, 1fr)); } .readout > .cell:last-child:nth-child(3n+1) { grid-column: span 3; } .readout > .cell:last-child:nth-child(3n+2) { grid-column: span 2; } }
+@media (max-width: 759.98px) { .readout > .cell:last-child:nth-child(2n+1) { grid-column: span 2; } }
+.cell { background: var(--slab); padding: 0.75rem 0.9rem; display: grid; gap: 0.25rem; min-width: 0; align-content: start; }
+.cell .k { font: 500 0.66rem/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+.cell .val { font: 500 1.08rem/1.3 var(--math); overflow-wrap: anywhere; min-width: 0; font-variant-numeric: tabular-nums; }
+.cell .val.mono { font: 500 0.9rem/1.35 var(--mono); }
+.cell .sub { font: 400 0.72rem/1.4 var(--mono); color: var(--ink-3); overflow-wrap: anywhere; }
+.cell.hl { background: linear-gradient(var(--gold-soft), var(--gold-soft)), var(--slab); }
+.cell.hl .val { color: var(--gold); }
+.cell.ok .val { color: var(--verd); }
+.strip { width: 100%; height: 150px; display: block; background: var(--slab); border: 1px solid var(--rule); border-radius: 2px; }
+.box { background: var(--slab); border: 1px solid var(--rule); border-radius: 3px; padding: 1.1rem 1.2rem; display: grid; gap: 0.9rem; min-width: 0; }
+.box h3 { font-size: 1.15rem; }
+.note { font-size: var(--t-small); color: var(--ink-2); }
+.display { font-family: var(--math); font-size: 1.15rem; color: var(--ink); background: var(--slab); border: 1px solid var(--rule); border-radius: 2px; padding: 0.7rem 1rem; overflow-x: auto; white-space: nowrap; min-width: 0; }
+
+/* network */
+.net-canvas { width: 100%; height: auto; aspect-ratio: 3 / 1.25; display: block; background: var(--slab); border: 1px solid var(--rule); border-radius: 3px; }
+.node-ctl { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.node-ctl .box { padding: 0.9rem 1rem; }
+
+/* figures and tables */
+.figs { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+figure { margin: 0; min-width: 0; }
+figure svg { width: 100%; height: auto; display: block; }
+figcaption { margin-top: 0.6rem; font-size: var(--t-small); color: var(--ink-3); line-height: 1.45; }
+.ax { stroke: var(--rule); stroke-width: 1; } .gridl { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 2 4; }
+.tk { font: 400 10px var(--mono); fill: var(--ink-3); }
+.lbl { font: 500 10.5px var(--mono); fill: var(--ink-2); }
+.ln-gold { stroke: var(--gold); stroke-width: 1.6; fill: none; } .ln-verd { stroke: var(--verd); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+.ln-ink { stroke: var(--ink-2); stroke-width: 1.2; fill: none; } .ln-rose { stroke: var(--rose); stroke-width: 1.4; fill: none; }
+.dot-gold { fill: var(--gold); } .dot-verd { fill: var(--verd); } .dot-ink { fill: var(--ink-2); } .dot-rose { fill: var(--rose); }
+.bar { fill: var(--ink-3); opacity: 0.55; } .bar.sel { fill: var(--gold); opacity: 1; }
+.table-box { overflow-x: auto; border: 1px solid var(--rule); border-radius: 2px; background: var(--slab); }
+table { border-collapse: collapse; width: 100%; font: 400 0.78rem/1.4 var(--mono); font-variant-numeric: tabular-nums; }
+th, td { padding: 0.5rem 0.7rem; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 500; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); background: var(--slab); }
+td.num { text-align: right; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+td .pass { color: var(--verd); } td .fail { color: var(--rose); }
+.lit td:first-child { white-space: normal; min-width: 13rem; }
+.lit td { font-family: var(--serif); font-size: 0.98rem; line-height: 1.4; }
+.lit td.mono { font-family: var(--mono); font-size: 0.74rem; }
+pre.cmd { margin: 0; font: 400 0.78rem/1.6 var(--mono); color: var(--ink-2); background: var(--ground); border: 1px solid var(--rule); border-radius: 2px; padding: 0.8rem 1rem; overflow-x: auto; white-space: pre; }
+.bounds { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+.bound { border-top: 2px solid var(--rule); padding-top: 1rem; display: grid; gap: 0.75rem; align-content: start; justify-items: start; }
+.bound.e0 { border-color: var(--gold); } .bound.e1 { border-color: var(--verd); border-top-style: dashed; } .bound.open { border-color: var(--ink-3); border-top-style: dotted; }
+.bound ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.55rem; font-size: 1.04rem; }
+.eqs { display: grid; gap: 0.9rem; max-width: 52rem; }
+.eq { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; padding-top: 0.9rem; border-top: 1px solid var(--rule); }
+.eq .t { display: flex; flex-wrap: wrap; gap: 0.5rem 0.8rem; align-items: center; font-size: 1.08rem; }
+.eq .src { font: 400 0.74rem/1.5 var(--mono); color: var(--ink-3); }
+.links { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 2px; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+.links a { background: var(--ground); padding: 1rem 1.1rem; text-decoration: none; display: grid; gap: 0.25rem; color: var(--ink); min-width: 0; }
+.links a:hover { background: var(--slab); }
+.links .t { font-size: 1.08rem; } .links .d { font: 400 0.74rem/1.45 var(--mono); color: var(--ink-3); overflow-wrap: anywhere; }
+.rep { font: 400 0.8rem/1.6 var(--mono); color: var(--ink-2); overflow-wrap: anywhere; }
+.rep b { font-weight: 500; color: var(--ink); }
+.badge { font: 500 0.74rem/1 var(--mono); letter-spacing: 0.06em; padding: 0.45em 0.6em; border-radius: 2px; border: 1px solid var(--rule); color: var(--ink-2); }
+.badge.ok { color: var(--verd); border-color: var(--verd); } .badge.warn { color: var(--gold); border-color: var(--gold-line); } .badge.bad { color: var(--rose); border-color: var(--rose); }
+.amps { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+footer { padding-block: 2.5rem 3.5rem; border-top: 1px solid var(--rule); font: 400 0.76rem/1.6 var(--mono); color: var(--ink-3); }
+footer p + p { margin-top: 0.4rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+<!-- city-share:start · Mathematical City link-share card -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Mathematical City">
+<meta property="og:title" content="The Quantum Clock">
+<meta property="og:description" content="A qubit in the protected E47 sector that reads its own proper time and keeps it through leak and recovery. 48/48 precision checks, recomputed in your browser.">
+<meta property="og:url" content="https://nicholaskouns-create.github.io/Time/">
+<meta property="og:image" content="https://nicholaskouns-create.github.io/Time/assets/og/quantum-clock.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Share card for The Quantum Clock, showing the clock face and its precision certificate">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Quantum Clock">
+<meta name="twitter:description" content="A qubit in the protected E47 sector that reads its own proper time and keeps it through leak and recovery. 48/48 precision checks, recomputed in your browser.">
+<meta name="twitter:image" content="https://nicholaskouns-create.github.io/Time/assets/og/quantum-clock.jpg">
+<meta name="twitter:image:alt" content="Share card for The Quantum Clock, showing the clock face and its precision certificate">
+<!-- city-share:end -->
+</head>
+<body>
+<main>
+<div class="wrap" style="position:relative">
+
+<header class="hero" id="top">
+  <div class="eyebrow"><span>The Mathematical City</span><span aria-hidden="true">·</span><span>Instrument</span><span class="ev e0">E0 proved</span><span class="ev e1">E1 computed</span><span class="ev e2">E2 simulated</span></div>
+  <h1>The Quantum Clock</h1>
+  <p class="lead">A qubit held inside the protected 47-dimensional sector of <span class="m">V<sub>2</sub>⊗V<sub>2</sub>⊗V<sub>2</sub></span>. Its hand is the phase between the Casimir sectors <span class="m">C = 6</span> and <span class="m">C = 30</span>. It reads its own proper time, it keeps that time exactly while recovery pulls every leak back, and two of them on different worldlines drift apart by exactly <span class="m nowrap">(<i class="v">N</i><sub>1</sub> − <i class="v">N</i><sub>2</sub>)<i class="v">ω</i></span>.</p>
+  <p>Built from the corpus’ own formalism: the Casimir selector and <span class="m">P<sub>47</sub></span>, the Clock Math Lindblad theorem, the prime 47-cycle, the modular synchronisation clock, the time-chain identity, the E47 pullback metric, and the temporal quantum graph network. One forward tick of the clock is exactly the T gate of <a href="https://nicholaskouns-create.github.io/matrix-quantum-simulator/">The Matrix</a>.</p>
+  <dl class="credits">
+    <dt>Framework &amp; E47 kernel</dt><dd>Nicholas Shane Kouns</dd>
+    <dt>Clock, engine &amp; instrument</dt><dd>Claude (Anthropic), 19 October 2026</dd>
+    <dt>Arithmetic</dt><dd>float64, exact propagators, recomputed in this browser</dd>
+    <dt>Reference</dt><dd>Python TQGNN package · JavaScript parity to 10⁻¹⁴</dd>
+  </dl>
+  <div class="certline" role="status" aria-live="polite"><span>Precision certificate</span><span class="progress" aria-hidden="true"><span id="cert-bar"></span></span><b id="cert-status">running…</b><a href="#certificate">see every check</a></div>
+  <nav class="toc" aria-label="Sections">
+    <a href="#clock">The clock</a><a href="#network">A network of clocks</a><a href="#construct">Construct it</a><a href="#certificate">Certificate</a><a href="#matrix">The Matrix bridge</a><a href="#automate">Automate</a><a href="#literature">Literature</a><a href="#formalism">Formalism</a><a href="#boundary">Evidence boundary</a>
+  </nav>
+</header>
+
+<!-- ============================================================== THE CLOCK -->
+<section class="band" id="clock" aria-labelledby="clock-h">
+  <div class="head">
+    <div class="eyebrow"><span>Instrument</span><span class="ev e0">E0</span><span class="ev e1">E1</span><span class="ev e2">E2 clicks</span></div>
+    <h2 id="clock-h">The clock</h2>
+    <p class="prose">The gold hand is the deterministic clock, <span class="m">−arg Tr(|a⟩⟨b| ρ)</span>, propagated with the exact matrix exponential of its Lindblad generator. The green hand is one monitored run of the same clock, whose recovery clicks are recorded with efficiency <i class="v">η</i>. The eight labels are Matrix gate words: when the hand points at <span class="mono">ST</span>, the clock has done what <span class="mono">T·T·T</span> does. The marks round the rim are the prime 47-cycle.</p>
+  </div>
+  <div class="instrument">
+    <div class="face-col">
+      <div class="face-wrap"><canvas id="face" role="img" aria-label="Clock face: gold hand is the deterministic clock phase, green hand one monitored trajectory; the inner ring shows the population inside E47."></canvas></div>
+      <div class="legend"><span><i style="background:var(--gold)"></i>clock (ρ)</span><span><i style="background:var(--verd)"></i>one run (clicks recorded)</span><span><i style="background:var(--ink-3)"></i>population in E47</span></div>
+      <div class="row"><button class="btn" id="play" aria-pressed="true">Pause</button><button class="btn quiet" id="reset">Reset</button><button class="btn quiet" id="permalink">Copy link</button><button class="btn quiet" id="save-clock">Save state</button></div>
+      <p class="status-line" id="clock-msg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="panel">
+      <div class="readout" aria-live="off">
+        <div class="cell"><span class="k">coordinate time t</span><span class="val" id="r-t">0</span><span class="sub">dimensionless units</span></div>
+        <div class="cell hl"><span class="k">proper time τ</span><span class="val" id="r-tau">0</span><span class="sub" id="r-lapse">N = 1</span></div>
+        <div class="cell"><span class="k">gold hand reads</span><span class="val" id="r-phase">0</span><span class="sub" id="r-phase-err">error 0</span></div>
+        <div class="cell"><span class="k">green hand reads</span><span class="val" id="r-phase-c">0</span><span class="sub" id="r-phase-c-err">error 0</span></div>
+        <div class="cell"><span class="k">clicks counted</span><span class="val" id="r-clicks">0</span><span class="sub" id="r-clicktime">click clock τ = n/λ</span></div>
+        <div class="cell"><span class="k">in E47 (retention)</span><span class="val" id="r-ret">1</span><span class="sub" id="r-ret-closed">stationary 1 − q</span></div>
+        <div class="cell"><span class="k">clock coherence |κ|</span><span class="val" id="r-coh">0.5</span><span class="sub" id="r-deph">dephasing 0</span></div>
+        <div class="cell"><span class="k">clicks per unit τ</span><span class="val" id="r-rate">0</span><span class="sub" id="r-fano">Fano F</span></div>
+        <div class="cell"><span class="k">dialects of the phase</span><span class="val mono" id="r-radix">0;0,0</span><span class="sub" id="r-prime">prime tick 0/47</span></div>
+      </div>
+      <canvas class="strip" id="strip" role="img" aria-label="Recent history: hand errors, population in E47, recovery clicks"></canvas>
+      <div class="box">
+        <div class="ctl"><span class="lab">Clock</span>
+          <div class="chips" role="group" aria-label="Clock type"><button class="chip" data-clock="matched" aria-pressed="true">matched · f(42) = f(12) + ω</button><button class="chip" data-clock="linear" aria-pressed="false">linear · f = ωC/24</button></div>
+        </div>
+        <div class="grid-ctl">
+          <div class="ctl"><label for="in-omega">clock frequency ω <output id="o-omega"></output></label><input id="in-omega" type="range" min="0.2" max="4" step="0.005"></div>
+          <div class="ctl"><label for="in-c">leak coupling c <output id="o-c"></output></label><input id="in-c" type="range" min="0" max="3" step="0.05"></div>
+          <div class="ctl"><label for="in-gamma">recovery rate γ <output id="o-gamma"></output></label><input id="in-gamma" type="range" min="0.5" max="60" step="0.5"></div>
+          <div class="ctl"><label for="in-eta">detection efficiency η <output id="o-eta"></output></label><input id="in-eta" type="range" min="0" max="1" step="0.01"></div>
+          <div class="ctl"><label for="in-v1">velocity v₁ <output id="o-v1"></output></label><input id="in-v1" type="range" min="0" max="0.7" step="0.005"></div>
+          <div class="ctl"><label for="in-v2">velocity v₂ <output id="o-v2"></output></label><input id="in-v2" type="range" min="0" max="0.35" step="0.005"></div>
+          <div class="ctl"><label for="in-v3">velocity v₃ <output id="o-v3"></output></label><input id="in-v3" type="range" min="0" max="0.7" step="0.005"></div>
+          <div class="ctl"><label for="in-speed">time per second <output id="o-speed"></output></label><input id="in-speed" type="range" min="0.1" max="8" step="0.1"></div>
+        </div>
+        <div class="row">
+          <div class="chips" role="group" aria-label="Metric"><button class="chip" data-metric="e47" aria-pressed="true">E47 metric diag(−1, 2, 8, 2)</button><button class="chip" data-metric="minkowski" aria-pressed="false">Minkowski</button></div>
+          <div class="chips" role="group" aria-label="Presets"><button class="chip" data-preset="standard">standard</button><button class="chip" data-preset="kicks">linear: phase kicks</button><button class="chip" data-preset="zeno">linear: Zeno γ = 60</button><button class="chip" data-preset="deterministic">η = 0</button><button class="chip" data-preset="moving">moving v₁ = 0.3</button></div>
+        </div>
+        <p class="note" id="clock-explain"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== NETWORK -->
+<section class="band" id="network" aria-labelledby="net-h">
+  <div class="head">
+    <div class="eyebrow"><span>Temporal quantum graph neural network</span><span class="ev e0">E0</span><span class="ev e1">E1</span><span class="ev e2">E2 runs</span></div>
+    <h2 id="net-h">A network of clocks</h2>
+    <p class="prose">Each node is the same clock-memory unit on its own worldline. The graph Hamiltonian is QGNN message passing: exchange <i class="v">J</i>(σ⁺σ⁻ + h.c.) and Ising <i class="v">J<sub>zz</sub></i> <span class="m">Z Z</span> between neighbouring clocks. In coordinate time every term is scaled by the lapse of the worldline it lives on, <span class="m">H<sub>t</sub> = Σ N<sub>v</sub>H<sub>v</sub> + Σ N<sub>e</sub>H<sub>e</sub></span>, <span class="m">L<sub>v,t</sub> = √N<sub>v</sub> R<sub>v</sub></span>. Faster clocks run slow, by exactly their lapse.</p>
+  </div>
+  <canvas class="net-canvas" id="net" role="img" aria-label="Network of clock faces joined by their graph edges"></canvas>
+  <div class="readout" id="net-readout" style="margin-top:1rem"></div>
+  <div class="box" style="margin-top:1.25rem">
+    <div class="row">
+      <div class="chips" role="group" aria-label="Nodes"><button class="chip" data-nodes="2" aria-pressed="false">2 clocks</button><button class="chip" data-nodes="3" aria-pressed="true">3 clocks</button></div>
+      <div class="chips" role="group" aria-label="Graph"><button class="chip" data-topo="path" aria-pressed="true">path</button><button class="chip" data-topo="ring" aria-pressed="false">triangle</button></div>
+      <div class="chips" role="group" aria-label="Network mode"><button class="chip" data-netmode="flow" aria-pressed="true">deterministic flow</button><button class="chip" data-netmode="run" aria-pressed="false">one monitored run</button></div>
+      <div class="chips" role="group" aria-label="Network clock"><button class="chip" data-netclock="matched" aria-pressed="true">matched</button><button class="chip" data-netclock="linear" aria-pressed="false">linear</button></div>
+    </div>
+    <div class="grid-ctl">
+      <div class="ctl"><label for="n-J">exchange J <output id="o-nJ"></output></label><input id="n-J" type="range" min="0" max="1" step="0.01" value="0"></div>
+      <div class="ctl"><label for="n-Jzz">Ising Jzz <output id="o-nJzz"></output></label><input id="n-Jzz" type="range" min="0" max="1" step="0.01" value="0"></div>
+      <div class="ctl"><label for="n-c">leak c <output id="o-nc"></output></label><input id="n-c" type="range" min="0" max="2" step="0.05" value="0.5"></div>
+      <div class="ctl"><label for="n-gamma">recovery γ <output id="o-ngamma"></output></label><input id="n-gamma" type="range" min="1" max="40" step="0.5" value="10"></div>
+    </div>
+    <div class="node-ctl" id="node-ctl"></div>
+    <div class="row"><button class="btn" id="net-play" aria-pressed="true">Pause</button><button class="btn quiet" id="net-reset">Reset</button><button class="btn quiet" id="net-tqgnn">TQGNN lapses 1, √0.82, √0.74</button><button class="btn quiet" id="net-learn">Recover the lapses</button></div>
+    <p class="status-line" id="net-msg" role="status" aria-live="polite"></p>
+  </div>
+  <figure style="margin-top:1.25rem"><svg id="net-plot" viewBox="0 0 720 220" role="img" aria-label="Phase of each clock relative to clock 1 against coordinate time"></svg>
+    <figcaption>Phase of each clock relative to clock 1 (solid) against the drift <span class="m">(N<sub>v</sub> − N<sub>1</sub>)ωt</span> the lapses predict (dashed). With <i class="v">J</i> = 0 and the matched clock they coincide to round-off; exchange between clocks on different worldlines is detuned by that same drift.</figcaption></figure>
+</section>
+
+<!-- ============================================================== CONSTRUCT -->
+<section class="band" id="construct" aria-labelledby="con-h">
+  <div class="head">
+    <div class="eyebrow"><span>Built in this browser</span><span class="ev e0">E0</span><span class="ev e1">E1</span></div>
+    <h2 id="con-h">Construct it from the carrier</h2>
+    <p class="prose">Nothing on this page is typed in. The page builds the three spin-2 systems, the total Casimir <span class="m">C</span>, its eigenspaces, the selector <span class="m">K = (C − 6I)(C − 30I)</span>, the projector, the clock states and the metric, then reads every number below off what it built.</p>
+  </div>
+  <div class="figs">
+    <figure><svg id="fig-spec" viewBox="0 0 520 240" role="img" aria-label="Casimir spectrum multiplicities with the E47 bands highlighted"></svg><figcaption id="cap-spec">Casimir spectrum of V₂⊗³. The gold bands, C = 6 and C = 30, are E47: 25 + 22 = 47 of 125.</figcaption></figure>
+    <figure><svg id="fig-contr" viewBox="0 0 520 240" role="img" aria-label="Contraction of Gamma to the projector, measured by matrix powers against (15/17)^n"></svg><figcaption>‖Γⁿ − P‖₂ measured by matrix powers (dots) on the exact law (15/17)ⁿ (line), down to (15/17)²²⁰ = 1.0998 × 10⁻¹². Γ = I − K²/99144.</figcaption></figure>
+  </div>
+  <div class="readout" id="con-readout" style="margin-top:1.25rem"></div>
+  <div class="figs" style="margin-top:1.25rem">
+    <figure><svg id="fig-prime" viewBox="0 0 520 260" role="img" aria-label="Prime clock: the 47-cycle and the 5-cycle of the torus return together after 235 steps"></svg><figcaption>Select → Lock → Cycle. The 47-cycle on a basis of E47 (outer ring) and the torus clock on the 5×5×5 sites (inner) return together only after lcm(5, 47) = 235 steps. Drag the slider to step both.</figcaption>
+      <div class="ctl" style="margin-top:.6rem"><label for="prime-n">step n <output id="o-prime-n">0</output></label><input id="prime-n" type="range" min="0" max="235" step="1" value="0"></div></figure>
+    <figure><svg id="fig-sync" viewBox="0 0 520 260" role="img" aria-label="Modular synchronisation clock z to z squared mod 5875 with period 220"></svg><figcaption>The synchronisation clock <span class="m">z ↦ z² mod 5875</span> from z₀ = 2: two transient steps, then a 220-cycle (period 11 mod 47, 20 mod 125). Stepping <span class="m">U = Γ ⊗ T</span>, the filter converges at (15/17)ⁿ without waiting for the clock, and at n = 220 the clock has returned.</figcaption>
+      <div class="ctl" style="margin-top:.6rem"><label for="sync-n">step n <output id="o-sync-n">0</output></label><input id="sync-n" type="range" min="0" max="222" step="1" value="0"></div></figure>
+  </div>
+</section>
+
+<!-- ============================================================== CERTIFICATE -->
+<section class="band" id="certificate" aria-labelledby="cert-h">
+  <div class="head">
+    <div class="eyebrow"><span>Precision certificate</span><span class="ev e0">E0</span><span class="ev e1">E1</span><span class="ev e2">E2</span></div>
+    <h2 id="cert-h">Every claim, recomputed</h2>
+    <p class="prose">The same engine runs here, in a background thread, and in the repository’s test suite. Each check records the value it found, the target, the residual and the tolerance. Parity checks compare against numbers written by the independent Python reference with exact propagators.</p>
+  </div>
+  <div class="row"><b class="mono" id="cert-id">MC-QCLOCK-PRECISION-20261019-001</b><span class="badge" id="cert-badge">running</span><span class="mono muted" id="cert-meta"></span></div>
+  <div class="row" style="margin-top:1rem"><button class="btn" id="cert-run">Run again</button><button class="btn quiet" id="cert-dl" disabled>Download certificate</button><a class="btn quiet" href="data/certificate.json">Committed certificate</a><a class="btn quiet" href="data/golden.json">Python reference values</a></div>
+  <p class="status-line" id="cert-compare" style="margin-top:.75rem"></p>
+  <div class="table-box" style="margin-top:1rem"><table id="cert-table"><thead><tr><th>id</th><th>check</th><th>class</th><th class="num">residual</th><th class="num">tolerance</th><th>verdict</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<!-- ============================================================== MATRIX -->
+<section class="band" id="matrix" aria-labelledby="mx-h">
+  <div class="head">
+    <div class="eyebrow"><span>Bridge</span><span>city.quantum.state-receipt.v1</span><span class="ev e0">E0</span><span class="ev e1">E1</span></div>
+    <h2 id="mx-h">The Matrix bridge</h2>
+    <p class="prose">Export a receipt from <a href="https://nicholaskouns-create.github.io/matrix-quantum-simulator/">The Matrix Quantum Simulator</a> and bring it here. The bridge checks its SHA-256 digest, then replays the circuit with the Matrix’s own gate arithmetic, in the order the diagram shows and in the order the gates were placed, and says which one the state matches. One qubit then becomes the clock’s logical qubit, <span class="m">|0⟩ ↦ |b⟩ (C = 30)</span>, <span class="m">|1⟩ ↦ |a⟩ (C = 6)</span>; the other two ride along. Under the matched clock, <i class="v">k</i> forward ticks are exactly <span class="m">T<sup><i class="v">k</i></sup></span>, even with leak and recovery running, so the result goes back to the Matrix as a receipt it can open.</p>
+  </div>
+  <div class="instrument" style="grid-template-columns:minmax(0,1fr)">
+    <div class="box">
+      <div class="row"><label class="btn" for="mx-file" style="cursor:pointer">Open receipt</label><input id="mx-file" type="file" accept=".json,application/json" hidden><button class="btn quiet" id="mx-paste">Paste JSON</button><button class="btn quiet" id="mx-sample">Sample: GHZ from the Matrix</button><button class="btn quiet" id="mx-sample-bad">Sample: gates placed out of order</button></div>
+      <div class="rep" id="mx-report">No receipt loaded.</div>
+      <div class="grid-ctl">
+        <div class="ctl"><label for="mx-q">clock qubit</label><select id="mx-q"><option value="0">q0</option><option value="1">q1</option><option value="2" selected>q2</option></select></div>
+        <div class="ctl"><label for="mx-ticks">forward ticks <output id="o-mx-ticks">1</output></label><input id="mx-ticks" type="range" min="1" max="8" step="1" value="1"></div>
+        <div class="ctl"><span class="lab">clock</span><span class="mono" id="mx-clock">matched · c = 1 · γ = 20</span></div>
+      </div>
+      <div class="row"><button class="btn" id="mx-run" disabled>Run the clock on this qubit</button><button class="btn quiet" id="mx-export" disabled>Export Matrix receipt</button><button class="btn quiet" id="mx-export-clock" disabled>Export clock receipt</button><a class="btn quiet" href="https://nicholaskouns-create.github.io/matrix-quantum-simulator/">Open The Matrix</a></div>
+      <div class="rep" id="mx-result"></div>
+      <div class="amps" id="mx-amps"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== AUTOMATE -->
+<section class="band" id="automate" aria-labelledby="au-h">
+  <div class="head">
+    <div class="eyebrow"><span>Tools</span><span class="ev e1">E1</span></div>
+    <h2 id="au-h">Automate</h2>
+    <p class="prose">Sweep any parameter and get the numerical answer next to the closed form, as a table you can download. The same engine is importable from the page, scriptable from another window, and runnable from the command line and from GitHub Actions.</p>
+  </div>
+  <div class="box">
+    <div class="grid-ctl">
+      <div class="ctl"><label for="sw-param">sweep</label><select id="sw-param"><option value="gamma">recovery rate γ</option><option value="c">leak coupling c</option><option value="omega">clock frequency ω</option><option value="eta">detection efficiency η</option></select></div>
+      <div class="ctl"><label for="sw-from">from</label><input id="sw-from" type="number" value="2" step="any"></div>
+      <div class="ctl"><label for="sw-to">to</label><input id="sw-to" type="number" value="60" step="any"></div>
+      <div class="ctl"><label for="sw-steps">points</label><input id="sw-steps" type="number" value="24" min="2" max="400" step="1"></div>
+      <div class="ctl"><label for="sw-clock">clock</label><select id="sw-clock"><option value="linear">linear</option><option value="matched">matched</option></select></div>
+      <div class="ctl"><label for="sw-log">spacing</label><select id="sw-log"><option value="0">linear</option><option value="1">logarithmic</option></select></div>
+    </div>
+    <div class="row"><button class="btn" id="sw-run">Run sweep</button><button class="btn quiet" id="sw-csv" disabled>Download CSV</button><button class="btn quiet" id="sw-json" disabled>Download JSON</button></div>
+    <p class="status-line" id="sw-msg"></p>
+  </div>
+  <div class="figs" style="margin-top:1.25rem">
+    <figure><svg id="sw-fig1" viewBox="0 0 520 240" role="img" aria-label="Retention against the swept parameter"></svg><figcaption>Population kept in E47 for each logical branch: numerical steady state (dots) on 1 − 4c²/(γ² + 8c² + 4Δ²) (lines).</figcaption></figure>
+    <figure><svg id="sw-fig2" viewBox="0 0 520 240" role="img" aria-label="Clock dephasing against the swept parameter"></svg><figcaption>Clock dephasing: exact slowest coherence mode (dots) and the second-order law ½γc²|z_a − z_b|² (line). The matched clock is identically zero.</figcaption></figure>
+  </div>
+  <div class="figs" style="margin-top:1.25rem">
+    <div class="box"><h3>Script it from the page</h3><pre class="cmd">// in this page's console
+const { NodeClock, sweep, runCertificate } = window.QuantumClock;
+const clk = new NodeClock({ clock: 'linear', gamma: 10, eta: 1 });
+clk.advance(100);            // coordinate time
+clk.state();                 // τ, hands, clicks, retention …
+sweep({ param: 'gamma', from: 2, to: 60, steps: 30 });</pre>
+      <p class="note">From another window or an iframe: <span class="mono">postMessage({ type: 'QCLOCK_SET', params })</span> reconfigures the clock, <span class="mono">{ type: 'QCLOCK_GET' }</span> answers with <span class="mono">QCLOCK_STATE</span>, and when embedded the page posts <span class="mono">QCLOCK_CERTIFICATE</span> to its parent once the certificate finishes.</p></div>
+    <div class="box"><h3>Run it headless</h3><pre class="cmd">git clone https://github.com/nicholaskouns-create/Time
+cd Time
+node --test tests/engine.test.js
+node tools/qclock-cli.js certificate
+node tools/qclock-cli.js sweep --param gamma --from 2 --to 60 --steps 30 --csv
+node tools/qclock-cli.js run --tau 50 --clock linear --gamma 10
+node tools/qclock-cli.js verify-receipt matrix-quantum-receipt.json
+pip install -r requirements.txt
+python tools/golden.py --check</pre>
+      <p class="note">GitHub Actions runs the tests, the certificate and the Matrix audit on every push (<span class="mono">.github/workflows/quantum-clock.yml</span>), and the Python validators and reference values (<span class="mono">.github/workflows/validate.yml</span>). The clock itself needs no dependencies: Node 22 and a browser are enough.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================== LITERATURE -->
+<section class="band" id="literature" aria-labelledby="lit-h">
+  <div class="head">
+    <div class="eyebrow"><span>Global literature</span><span>searched 18–19 October 2026</span></div>
+    <h2 id="lit-h">What exists, and what this adds</h2>
+    <p class="prose">Every ingredient has a literature. I found no published construct that puts them together: a clock register defined by a pair of Casimir sectors of a spin tensor product; a leak-and-recovery cycle whose clicks are ticks; the matched-spectrum condition that keeps the logical phase exact through recovery, with the gap-24 obstruction that rules out the linear clock; and graphs of such clocks on worldlines, unravelled from stochastic ticks to a deterministic flow by the detection efficiency. So the tools here build it.</p>
+  </div>
+  <div class="table-box"><table class="lit"><thead><tr><th>work</th><th>what it shares</th><th>what differs here</th></tr></thead><tbody>
+    <tr><td><a href="https://arxiv.org/abs/1105.4531">Zych, Costa, Pikovski, Brukner 2011</a> · Nat. Commun. 2, 505</td><td>A quantum clock’s internal phase records proper time; which-path time dilation shows up as lost visibility.</td><td>Proper time enters as a lapse on a whole Lindblad generator, per node of a network.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/1311.1095">Pikovski, Zych, Costa, Brukner 2015</a> · Nat. Phys. 11, 668</td><td>Time dilation couples internal energy, a clock, to the centre of mass and decoheres spatial superpositions.</td><td>Here the clock itself is the protected system; its only dephasing comes from the recovery channel, and the matched clock removes that.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/1507.01955">Castro-Ruiz, Giacomini, Brukner 2017</a> · PNAS 114, E2303</td><td>Clocks become entangled through gravity, by mass–energy and time dilation.</td><td>Clocks interact through QGNN graph Hamiltonians, scaled by edge lapses.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/1904.12390">Smith, Ahmadi 2020</a> · Nat. Commun. 11, 5360</td><td>Relational (Page–Wootters) clocks observe classical and quantum time dilation.</td><td>A coordinate-time GKSL model with the time-chain identity, not a constraint formalism.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/1310.6045">Kómár et al. 2014</a> · Nat. Phys. 10, 582</td><td>A network of entangled clocks.</td><td>Nodes are E47 clock-memory units on worldlines of an E47 pullback metric.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/1310.3260">Kessler, Lovchinsky, Sushkov, Lukin 2014</a> · PRL 112, 150802; <a href="https://arxiv.org/abs/1310.3750">Dür et al. 2014</a> · PRL 112, 080801; <a href="https://arxiv.org/abs/1706.02445">Zhou, Zhang, Preskill, Jiang 2018</a> · Nat. Commun. 9, 78</td><td>Error correction protects a phase being sensed; correction must not act on the signal.</td><td>The signal is the clock itself. The obstruction is spectral: only Casimir gap 24 = 30 − 6 ticks at ω, so a linear clock can never be logical-blind to recovery; matching the syndrome sectors fixes it exactly.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/1609.06704">Erker et al. 2017</a> · PRX 7, 031022; <a href="https://arxiv.org/abs/1806.00491">Woods, Silva, Pütz, Stupar, Renner 2022</a> · PRX Quantum 3, 010319</td><td>Autonomous quantum clocks whose ticks are stochastic events; precision versus dimension and entropy.</td><td>Ticks are recovery clicks with sub-Poissonian statistics F = 1 − 24c²γ²/(γ² + 8c²)², read beside a phase clock that does not need clicks at all.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/2006.08670">Pearson et al. 2021</a> · PRX 11, 021029</td><td>A measured clock: accuracy grows linearly with entropy per tick.</td><td>This page is mathematics and simulation only; it measures nothing.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/2609.16121">Arandes, Manikandan 2026</a> · arXiv:2609.16121</td><td>Counting statistics of few-level clocks, including transients.</td><td>Here: long-time and finite-time click statistics of a protected two-sector register.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/2303.04270">Landi et al. 2024</a> · PRX Quantum 5, 020201</td><td>Full counting statistics of open quantum systems.</td><td>The tilted-generator method used here for the Fano factors.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/1208.5791">Lidar 2014</a> (review); Zanardi, Rasetti 1997; Knill, Laflamme, Viola 2000</td><td>Decoherence-free subspaces and noiseless subsystems under collective SU(2).</td><td>E47 = 5V₂ ⊕ 2V₅ is selected by the Casimir, not by a noise algebra; the clock’s two states are one vector from each of its two Casimir sectors.</td></tr>
+    <tr><td><a href="https://arxiv.org/abs/1909.12264">Verdon et al. 2019</a> · Quantum Graph Neural Networks</td><td>Graph-structured Hamiltonians as network layers; recurrent QGNNs learn Hamiltonian parameters.</td><td>Temporal: each layer is a coordinate-time step with per-node lapses, and the learnable parameters include the lapses.</td></tr>
+  </tbody></table></div>
+</section>
+
+<!-- ============================================================== FORMALISM -->
+<section class="band" id="formalism" aria-labelledby="fo-h">
+  <div class="head">
+    <div class="eyebrow"><span>Formalism used</span><span>GitHub · Notion · Drive</span></div>
+    <h2 id="fo-h">The formalism, and where it lives</h2>
+  </div>
+  <div class="eqs">
+    <div class="eq"><div class="t"><span class="ev e0">E0</span><span class="m">E<sub>47</sub> = ker K = 5V<sub>2</sub> ⊕ 2V<sub>5</sub>,&nbsp; K = (C − 6I)(C − 30I),&nbsp; Γ = I − K²/99144,&nbsp; ‖Γⁿ − P‖ = (15/17)ⁿ</span></div><div class="src">Canonical finite core · <a href="https://github.com/nicholaskouns-create/E47-Kartekeya">E47-Kartekeya</a></div></div>
+    <div class="eq"><div class="t"><span class="ev e0">E0</span><span class="m">ρ(0) ⊂ E<sub>47</sub>, [H, P<sub>47</sub>] = 0 ⇒ ρ(t) ⊂ E<sub>47</sub>;&nbsp; KρK† − ½{K†K, ρ} = 0;&nbsp; gap 11664</span></div><div class="src">Clock Math — First-Principles Lindblad Proof of Open-System Timekeeping and Protected Memory · <a href="https://docs.google.com/document/d/1M_sYEDejIEtG7ZtfY7iVclFzu3CSKMGOMmMqJnwSmQI/edit">Drive</a></div></div>
+    <div class="eq"><div class="t"><span class="ev e0">E0</span><span class="m">U<sub>47</sub>φ<sub>k</sub> = φ<sub>k+1 mod 47</sub>,&nbsp; ord U<sub>47</sub> = 47,&nbsp; ord(U<sub>Δ</sub> ⊗ U<sub>47</sub>) = 235;&nbsp; ker(L ⊗ I + I ⊗ K²) = 1<sub>N</sub> ⊗ E<sub>47</sub></span></div><div class="src">Prime Clock and Synchronized Kernel Dynamics · <a href="https://app.notion.com/p/3a346094fd3081898e98f50be43fee80">Notion</a> · the 47-cycle’s basis and phase origin are a declared choice, not canonical</div></div>
+    <div class="eq"><div class="t"><span class="ev e0">E0</span><span class="m">z<sub>n+1</sub> = z<sub>n</sub>² mod 5875: transient 2, period 220 = lcm(11, 20);&nbsp; U = Γ ⊗ T,&nbsp; U<sup>220</sup> = Γ<sup>220</sup> ⊗ I</span></div><div class="src">MC-E47-MODSYNC-20261015-001 · <a href="https://drive.google.com/file/d/1-bCyEuWcN1rtRb1IJF02O8tTe7RbmaEC/view">validator on Drive</a></div></div>
+    <div class="eq"><div class="t"><span class="ev e0">E0</span><span class="m">dτ = ψ<sub>C</sub> dt ⇒ d/dτ = ψ<sub>C</sub>⁻¹ d/dt;&nbsp; dρ/dt = N(t) L<sub>τ</sub> ρ</span></div><div class="src">ARR-C005 · Time-Chain Identity (correction C0-TIME-CHAIN) · <a href="https://app.notion.com/p/3ab46094fd30817b8318cb9584a4e88b">Notion</a> · <a href="https://docs.google.com/document/d/1gWgNwQFwH501z0rhUPCoD0WoS1kdCw7vV_MbPDlE-QA/edit">Drive</a></div></div>
+    <div class="eq"><div class="t"><span class="ev e0">E0</span><span class="m">g = B<sub>4</sub>†(P<sub>6</sub> − P<sub>0</sub>)B<sub>4</sub> = diag(−1, 2, 8, 2),&nbsp; N = √(1 − 2v₁² − 8v₂² − 2v₃²)</span></div><div class="src">MC-E47-SPACETIME-PRIMA-FACIE-26-20260924 · <a href="https://github.com/nicholaskouns-create/E47-Kartekeya/blob/main/research/e47/validation/e47_spacetime_prima_facie.py">canonical runner</a></div></div>
+    <div class="eq"><div class="t"><span class="ev e0">E0</span><span class="m">H = f(C) + c(WV† + VW†),&nbsp; R = √γ VW†;&nbsp; q = 4c²/(γ² + 8c² + 4Δ²);&nbsp; f = ωC/24 ⇒ ⟨O⟩ = cos ωτ</span></div><div class="src">Time, Protected Memory, and E47: A Prima Facie Review · TQGNN reference (Python, 36/36)</div></div>
+    <div class="eq"><div class="t"><span class="ev e1">E1</span><span class="m">The clock is a typed map from phase to a reproducible readout: base 60, 12 and 5 dialects of one phase</span></div><div class="src">Clock-Based Mathematics · <a href="https://docs.google.com/presentation/d/1pgO9xUZXZ44soQQG6x39D6T765ZHn9AZX9cC94ROWaM/edit">Drive presentation</a></div></div>
+    <div class="eq"><div class="t"><span class="ev e1">E1</span><span class="m">Matrix receipts: SHA-256 over sorted-json-v1, 3 qubits, basis q0q1q2</span></div><div class="src">THE MATRIX — Quantum Simulator · <a href="https://app.notion.com/p/3dd46094fd308072b5c2ef223460c15b">Notion</a> · <a href="https://nicholaskouns-create.github.io/matrix-quantum-simulator/">site app</a></div></div>
+  </div>
+</section>
+
+<!-- ============================================================== BOUNDARY -->
+<section class="band" id="boundary" aria-labelledby="bd-h">
+  <div class="head">
+    <div class="eyebrow"><span>Evidence boundary</span></div>
+    <h2 id="bd-h">What is established, and what is not</h2>
+  </div>
+  <div class="bounds">
+    <div class="bound e0"><span class="ev e0">E0 proved</span><ul>
+      <li>The clock-memory node is exactly four-dimensional inside the 125-dimensional carrier.</li>
+      <li>The matched clock keeps <span class="m">κ(τ) = e<sup>−iωτ</sup>κ(0)</span> under any leak and recovery; the linear clock cannot, because only (6, 30) has Casimir gap 24.</li>
+      <li>Lapse-scaled generators satisfy the time-chain identity; equal-lapse networks are the proper-time network run at rate <i class="v">N</i>.</li>
+      <li>Orders 47 and 235; the 220-cycle and its synchronisation with Γ.</li>
+    </ul></div>
+    <div class="bound e1"><span class="ev e1">E1 computed</span><ul>
+      <li>48 checks in this browser, with residuals; JavaScript and Python agree to 10⁻¹⁴.</li>
+      <li>Receipts replay bit for bit with the Matrix’s own arithmetic.</li>
+    </ul><span class="ev e2">E2 simulated</span><ul>
+      <li>Monitored runs: click statistics agree with full counting statistics in a seeded Monte Carlo.</li>
+    </ul></div>
+    <div class="bound open"><span class="ev open">Open</span><ul>
+      <li>A physical tick duration, a hardware clock, or any measurement. Nothing here is a device.</li>
+      <li>The bridge ω·Δτ per tick between phase and proper time is a declared convention.</li>
+      <li>A canonical basis, ordering or phase origin for the 47-cycle; SU(2)-covariant versus full 47-state clocks remains a design fork.</li>
+      <li>Which syndrome sectors a physical system would offer, and whether the matched condition f(42) = f(12) + ω can be engineered.</li>
+    </ul></div>
+  </div>
+  <div class="links" style="margin-top:2.5rem">
+    <a href="https://nicholaskouns-create.github.io/"><span class="t">Personal Atlas</span><span class="d">the vestibule of the City</span></a>
+    <a href="https://nicholaskouns-create.github.io/matrix-quantum-simulator/"><span class="t">The Matrix Quantum Simulator</span><span class="d">three-qubit circuits and state receipts</span></a>
+    <a href="https://nicholaskouns-create.github.io/e47-moment-ladder/"><span class="t">The Moment Ladder</span><span class="d">why the cube is the only carrier</span></a>
+    <a href="https://nicholaskouns-create.github.io/E47-Kartekeya/"><span class="t">The Mathematical City</span><span class="d">E47-Kartekeya runtime</span></a>
+    <a href="https://github.com/nicholaskouns-create/Time"><span class="t">Source · Time</span><span class="d">this clock, its tests and the TQGNN package</span></a>
+  </div>
+</section>
+
+</div>
+</main>
+<div class="wrap"><footer>
+  <p>The Quantum Clock · E47 corpus of Nicholas Shane Kouns · clock construction, engine and instrument by Claude (Anthropic), 19 October 2026 · MIT License.</p>
+  <p>Finite-dimensional mathematics and simulation only. Every figure on this page is recomputed when the page loads; the certificate records what was computed and how closely.</p>
+</footer></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

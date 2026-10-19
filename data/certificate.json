@@ -1,0 +1,844 @@
+{
+ "certificate_code": "MC-QCLOCK-PRECISION-20261019-001",
+ "title": "Quantum Clock — E47 clock-memory unit, TQGNN network and Matrix bridge (executed)",
+ "engine": "qclock-engine 1.0.0",
+ "status": "48/48 PASS",
+ "passed": 48,
+ "total": 48,
+ "evidence_classes": {
+  "E0": "exact proof",
+  "E1": "executable reconstruction",
+  "E2": "simulation"
+ },
+ "claim_boundary": "Finite-dimensional mathematics and simulation of a declared model: the E47 carrier, a 4-dim clock-memory node, its GKSL dynamics, a two- or three-node TQGNN, and the 3-qubit Matrix receipt protocol. It is not a physical clock, makes no hardware, timing or experimental claim, and the metric-to-phase bridge (ω·Δτ per tick) is a declared convention.",
+ "golden": {
+  "schema": "QCLOCK-GOLDEN-1.0",
+  "generator_sha256": "1d3d7ed95006d3b2777a1d1e70b339952a7ced4c1fb0a27893685caab7ee928f",
+  "environment": {
+   "python": "3.13.16",
+   "numpy": "2.5.3",
+   "scipy": "1.18.1"
+  }
+ },
+ "environment": {
+  "runtime": "node v22.22.0",
+  "platform": "linux"
+ },
+ "elapsed_ms": 2362,
+ "checks": [
+  {
+   "group": "carrier",
+   "id": "A1",
+   "title": "Casimir spectrum of V₂⊗³: multiplicities 1, 9, 25, 28, 27, 22, 13",
+   "evidence": "E0+E1",
+   "value": {
+    "0": 1,
+    "2": 9,
+    "6": 25,
+    "12": 28,
+    "20": 27,
+    "30": 22,
+    "42": 13
+   },
+   "target": {
+    "0": 1,
+    "2": 9,
+    "6": 25,
+    "12": 28,
+    "20": 27,
+    "30": 22,
+    "42": 13
+   },
+   "residual": null,
+   "tolerance": null,
+   "pass": true
+  },
+  {
+   "group": "carrier",
+   "id": "A2",
+   "title": "Casimir eigenvalues are the integers j(j+1)",
+   "evidence": "E1",
+   "value": 2.2026824808563106e-13,
+   "target": 0,
+   "residual": 2.2026824808563106e-13,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "carrier",
+   "id": "A3",
+   "title": "C is a graph operator with 13 components (total-M blocks)",
+   "evidence": "E0+E1",
+   "value": "1,3,6,10,15,18,19,18,15,10,6,3,1",
+   "target": "1,3,6,10,15,18,19,18,15,10,6,3,1",
+   "residual": 0,
+   "tolerance": 0,
+   "pass": true
+  },
+  {
+   "group": "carrier",
+   "id": "A4",
+   "title": "P47 is the orthogonal projector of rank 47",
+   "evidence": "E0+E1",
+   "value": {
+    "trace": 47.000000000000036,
+    "idempotence": 1.887379141862766e-15,
+    "symmetry": 0
+   },
+   "target": {
+    "trace": 47
+   },
+   "residual": 3.552713678800501e-14,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "carrier",
+   "id": "A5",
+   "title": "K P47 = 0 with K = (C − 6I)(C − 30I)",
+   "evidence": "E0+E1",
+   "value": 1.56097357262297e-13,
+   "target": 0,
+   "residual": 1.56097357262297e-13,
+   "tolerance": 1e-11,
+   "pass": true
+  },
+  {
+   "group": "carrier",
+   "id": "A6",
+   "title": "Q = K² has nonzero spectrum from 11664 to 186624",
+   "evidence": "E0+E1",
+   "value": [
+    11663.999999999956,
+    186624.00000000914
+   ],
+   "target": [
+    11664,
+    186624
+   ],
+   "residual": 9.138602763414383e-9,
+   "tolerance": 1e-8,
+   "pass": true
+  },
+  {
+   "group": "carrier",
+   "id": "A7",
+   "title": "Optimal step ε* = 1/99144 and contraction ρ* = 15/17 (exact rationals)",
+   "evidence": "E0",
+   "value": {
+    "epsilon": "1/99144",
+    "rho": "15/17",
+    "rho_numeric": 0.8823529411765627
+   },
+   "target": {
+    "epsilon": "1/99144",
+    "rho": "15/17"
+   },
+   "residual": 9.214851104388799e-14,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "carrier",
+   "id": "A8",
+   "title": "‖Γⁿ − P‖₂ = (15/17)ⁿ by matrix powers, n = 1 … 220",
+   "evidence": "E0+E1",
+   "value": [
+    {
+     "n": 1,
+     "matrix_power": 0.8823529411764739,
+     "exact": 0.8823529411764706,
+     "diff": 3.3306690738754696e-15
+    },
+    {
+     "n": 5,
+     "matrix_power": 0.5348249858964699,
+     "exact": 0.534824985896467,
+     "diff": 2.886579864025407e-15
+    },
+    {
+     "n": 20,
+     "matrix_power": 0.08181760331463381,
+     "exact": 0.08181760331463322,
+     "diff": 5.828670879282072e-16
+    },
+    {
+     "n": 100,
+     "matrix_power": 0.0000036663487020703857,
+     "exact": 0.000003666348701376589,
+     "diff": 6.937966402829985e-16
+    },
+    {
+     "n": 220,
+     "matrix_power": 1.10053401355838e-12,
+     "exact": 1.0998014527879737e-12,
+     "diff": 7.325607704063376e-16
+    }
+   ],
+   "target": "(15/17)^n",
+   "residual": 3.3306690738754696e-15,
+   "tolerance": "1e-13 + 1e-10·(15/17)^n",
+   "pass": true
+  },
+  {
+   "group": "carrier",
+   "id": "A9",
+   "title": "Coherence fraction Ωc = 47/125 = 0.376",
+   "evidence": "E0",
+   "value": 0.3760000000000003,
+   "target": 0.376,
+   "residual": 2.7755575615628914e-16,
+   "tolerance": 1e-14,
+   "pass": true
+  },
+  {
+   "group": "spacetime",
+   "id": "B1",
+   "title": "Pullback metric g = B4†(P6 − P0)B4 = diag(−1, 2, 8, 2), built from the carrier",
+   "evidence": "E0+E1",
+   "value": [
+    [
+     -1.0000000000000016,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     2.0000000000000036,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     8.000000000000009,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     2.0000000000000067
+    ]
+   ],
+   "target": [
+    [
+     -1,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     2,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     8,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     2
+    ]
+   ],
+   "residual": 9.603429163007604e-15,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "spacetime",
+   "id": "B2",
+   "title": "Lapse N = √(1 − 2v₁² − 8v₂² − 2v₃²); spacelike velocities are refused",
+   "evidence": "E0",
+   "value": [
+    0.9055385138137417,
+    0.824621125123532,
+    0.9055385138137416,
+    null
+   ],
+   "target": [
+    0.9055385138137417,
+    0.824621125123532,
+    0.9055385138137416,
+    null
+   ],
+   "residual": 0,
+   "tolerance": 1e-15,
+   "pass": true
+  },
+  {
+   "group": "spacetime",
+   "id": "B3",
+   "title": "Parity with the Python reference: metric",
+   "evidence": "E1",
+   "value": 9.769962616701378e-15,
+   "target": 0,
+   "residual": 9.769962616701378e-15,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "node",
+   "id": "C1",
+   "title": "Clock-memory basis [a, a′, b, b′] is orthonormal",
+   "evidence": "E1",
+   "value": 5.273559366969494e-16,
+   "target": 0,
+   "residual": 5.273559366969494e-16,
+   "tolerance": 1e-14,
+   "pass": true
+  },
+  {
+   "group": "node",
+   "id": "C2",
+   "title": "a, b lie in E47 (C = 6, 30); a′, b′ lie outside (C = 12, 42)",
+   "evidence": "E0+E1",
+   "value": {
+    "casimir": [
+     6,
+     11.999999999999998,
+     29.999999999999996,
+     41.999999999999986
+    ],
+    "in_E47": 2.4421020238635922e-15,
+    "outside": 7.125107141138852e-16
+   },
+   "target": {
+    "casimir": [
+     6,
+     12,
+     30,
+     42
+    ]
+   },
+   "residual": 1.4210854715202004e-14,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "node",
+   "id": "C3",
+   "title": "H, R and R† map span{a, a′, b, b′} into itself (linear and matched clocks)",
+   "evidence": "E0+E1",
+   "value": 1.5543122344752192e-15,
+   "target": 0,
+   "residual": 1.5543122344752192e-15,
+   "tolerance": 1e-13,
+   "pass": true
+  },
+  {
+   "group": "node",
+   "id": "C4",
+   "title": "The 125-dim generator restricts exactly to the 4-dim node: U†HU = H_red, U†RU = R_red",
+   "evidence": "E0+E1",
+   "value": 8.881784197001252e-15,
+   "target": 0,
+   "residual": 8.881784197001252e-15,
+   "tolerance": 1e-13,
+   "pass": true
+  },
+  {
+   "group": "node",
+   "id": "C5",
+   "title": "Clock Math theorem: with L = K the dissipator vanishes on ρ = P47ρP47, and [ωC/24, P47] = 0",
+   "evidence": "E0+E1",
+   "value": {
+    "dissipator": 1.14396615827837e-12,
+    "commutator": 1.0408340855860843e-15
+   },
+   "target": 0,
+   "residual": 1.14396615827837e-12,
+   "tolerance": 1e-8,
+   "pass": true
+  },
+  {
+   "group": "clock",
+   "id": "D1",
+   "title": "Linear clock H = ωC/24 on E47: ⟨O⟩ = cos ωτ",
+   "evidence": "E0+E1",
+   "value": 3.4416913763379853e-15,
+   "target": 0,
+   "residual": 3.4416913763379853e-15,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "clock",
+   "id": "D2",
+   "title": "Matched clock under continuous leak and recovery keeps κ(τ) = e^(−iωτ) κ(0) exactly",
+   "evidence": "E0+E1",
+   "value": {
+    "coherence_error": 1.6644143704281372e-13,
+    "min_retention": 0.9902200488997565
+   },
+   "target": 0,
+   "residual": 1.6644143704281372e-13,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "clock",
+   "id": "D3",
+   "title": "Linear clock is dephased by recovery: γφ = ½γc²|z_a − z_b|² (second order, error ∝ c²)",
+   "evidence": "E0+E1",
+   "value": [
+    {
+     "c": 0.1,
+     "numeric": 0.000002467730387385829,
+     "adiabatic": 0.0000024690748376588086,
+     "rel": 0.0005445158050594312
+    },
+    {
+     "c": 0.01,
+     "numeric": 2.4690614429484236e-8,
+     "adiabatic": 2.469074837658646e-8,
+     "rel": 0.000005424991587177352
+    }
+   ],
+   "target": "relative error → 0 as c², ratio 100",
+   "residual": 0.000005424991587177352,
+   "tolerance": 0.00001,
+   "pass": true
+  },
+  {
+   "group": "clock",
+   "id": "D4",
+   "title": "Matched clock: the coherence mode is exactly −iω (zero dephasing)",
+   "evidence": "E0+E1",
+   "value": [
+    1.3827074257555398e-15,
+    -1.9999999999999998
+   ],
+   "target": [
+    0,
+    -2
+   ],
+   "residual": 1.3827074257555398e-15,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "clock",
+   "id": "D5",
+   "title": "Only (6, 30) has Casimir gap 24, so no syndrome pair makes the linear clock logical-blind",
+   "evidence": "E0",
+   "value": {
+    "gap24": [
+     [
+      6,
+      30
+     ]
+    ],
+    "blind_syndromes": []
+   },
+   "target": {
+    "gap24": [
+     [
+      6,
+      30
+     ]
+    ],
+    "blind_syndromes": []
+   },
+   "residual": null,
+   "tolerance": null,
+   "pass": true
+  },
+  {
+   "group": "clock",
+   "id": "D6",
+   "title": "Parity with the Python reference: node density matrices (18 cases, τ ≤ 10)",
+   "evidence": "E1",
+   "value": 1.6003490392679034e-14,
+   "target": 0,
+   "residual": 1.6003490392679034e-14,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "recovery",
+   "id": "E1",
+   "title": "Stationary leak 4c²/(γ² + 8c² + 4Δ²) and click rate γq (27 parameter points)",
+   "evidence": "E0+E1",
+   "value": 6.96491475604688e-16,
+   "target": 0,
+   "residual": 6.96491475604688e-16,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "recovery",
+   "id": "E2",
+   "title": "Review table: γ = 20 → 99.019608 %, 0.19607843; γ = 40 → 99.751244 %, 0.09950249 (exactly 101/102, 10/51, 401/402, 20/201)",
+   "evidence": "E0+E1",
+   "value": {
+    "gamma20": {
+     "retention": 0.9901960784313726,
+     "clicks": 0.19607843137254904
+    },
+    "gamma40": {
+     "retention": 0.9975124378109452,
+     "clicks": 0.09950248756218903
+    }
+   },
+   "target": {
+    "gamma20": "101/102, 10/51",
+    "gamma40": "401/402, 20/201"
+   },
+   "residual": 2.7755575615628914e-17,
+   "tolerance": 1e-14,
+   "pass": true
+  },
+  {
+   "group": "recovery",
+   "id": "E3",
+   "title": "Recovery clicks are sub-Poissonian: F = 1 − 24c²γ²/(γ² + 8c²)² (full counting statistics)",
+   "evidence": "E0+E1",
+   "value": 6.661338147750939e-16,
+   "target": 0,
+   "residual": 6.661338147750939e-16,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "recovery",
+   "id": "E4",
+   "title": "Detection efficiency thins the clicks: F_η = 1 + η(F − 1)",
+   "evidence": "E0+E1",
+   "value": 1.1102230246251565e-16,
+   "target": 0,
+   "residual": 1.1102230246251565e-16,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "recovery",
+   "id": "E5",
+   "title": "Parity with the Python reference: counting statistics (9 cases, finite-difference reference)",
+   "evidence": "E1",
+   "value": 4.748196169579444e-9,
+   "target": 0,
+   "residual": 4.748196169579444e-9,
+   "tolerance": 1e-8,
+   "pass": true
+  },
+  {
+   "group": "recovery",
+   "id": "E6",
+   "title": "Monte Carlo jump trajectories reproduce the click mean K1τ and variance K2τ (800 runs to τ = 80)",
+   "evidence": "E2",
+   "value": {
+    "mean": 47.94625,
+    "variance": 20.724266270337882,
+    "fano_sample": 0.4322395655622261,
+    "z_mean": -1.5949585211090862,
+    "z_variance": -0.9613628747791392
+   },
+   "target": {
+    "mean": 48.209366395344745,
+    "mean_asymptotic": 48.484848484848484,
+    "variance": 21.771433341681274,
+    "fano": 0.4490358126721763
+   },
+   "residual": 1.5949585211090862,
+   "tolerance": "z < 4",
+   "pass": true
+  },
+  {
+   "group": "time",
+   "id": "F1",
+   "title": "Time-chain identity: generator (N H, √N R) over t equals (H, R) over τ = N t",
+   "evidence": "E0+E1",
+   "value": 5.026748538604307e-16,
+   "target": 0,
+   "residual": 5.026748538604307e-16,
+   "tolerance": 1e-13,
+   "pass": true
+  },
+  {
+   "group": "time",
+   "id": "F2",
+   "title": "Time-dependent lapse: dρ/dt = N(t)L_τρ integrates to e^(τ(t) L_τ) ρ(0)",
+   "evidence": "E0+E1",
+   "value": {
+    "tau": 3.836815482691727,
+    "residual": 4.363176487792546e-14
+   },
+   "target": 0,
+   "residual": 4.363176487792546e-14,
+   "tolerance": 1e-9,
+   "pass": true
+  },
+  {
+   "group": "time",
+   "id": "F3",
+   "title": "C0-TIME-CHAIN: dτ = N dt implies d/dτ = N⁻¹ d/dt (not N d/dt)",
+   "evidence": "E0+E1",
+   "value": 5.183302865098628e-9,
+   "target": 0,
+   "residual": 5.183302865098628e-9,
+   "tolerance": 0.000001,
+   "pass": true
+  },
+  {
+   "group": "time",
+   "id": "F4",
+   "title": "Network time-chain identity: equal lapses N give dρ/dt = N L_τ ρ",
+   "evidence": "E0+E1",
+   "value": 3.9595799592289256e-16,
+   "target": 0,
+   "residual": 3.9595799592289256e-16,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "time",
+   "id": "F5",
+   "title": "Two matched clocks on different worldlines drift apart at exactly (N₁ − N₂)ω",
+   "evidence": "E0+E1",
+   "value": 1.481535216934818,
+   "target": 1.481535216934816,
+   "residual": 1.9984014443252818e-15,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "time",
+   "id": "F6",
+   "title": "Parity with the Python reference: two-node TQGNN readouts (4 cases)",
+   "evidence": "E1",
+   "value": 6.5503158452884236e-15,
+   "target": 0,
+   "residual": 6.5503158452884236e-15,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "prime",
+   "id": "G1",
+   "title": "The 47-cycle U47 on an orthonormal basis of E47 is orthogonal",
+   "evidence": "E1",
+   "value": {
+    "orthogonality": 5.773159728050814e-15,
+    "basis": 3.9968028886505635e-15
+   },
+   "target": 0,
+   "residual": 5.773159728050814e-15,
+   "tolerance": 1e-13,
+   "pass": true
+  },
+  {
+   "group": "prime",
+   "id": "G2",
+   "title": "ord(U47) = 47 (no smaller power is the identity; 47 is prime)",
+   "evidence": "E0+E1",
+   "value": 47,
+   "target": 47,
+   "residual": 5.728750807065808e-14,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "prime",
+   "id": "G3",
+   "title": "spec(U47) on E47 is every 47th root of unity",
+   "evidence": "E0+E1",
+   "value": 4.8755149362763345e-15,
+   "target": 0,
+   "residual": 4.8755149362763345e-15,
+   "tolerance": 1e-13,
+   "pass": true
+  },
+  {
+   "group": "prime",
+   "id": "G4",
+   "title": "Torus clock U_Δ = U_xU_yU_z on 5×5×5 has order 5, so U_Δ⁴⁷ = U_Δ² ≠ I",
+   "evidence": "E0+E1",
+   "value": {
+    "order": 5,
+    "U47_equals_U2": true
+   },
+   "target": {
+    "order": 5
+   },
+   "residual": null,
+   "tolerance": null,
+   "pass": true
+  },
+  {
+   "group": "prime",
+   "id": "G5",
+   "title": "Joint clock U_Δ ⊗ U47 has period lcm(5, 47) = 235",
+   "evidence": "E0",
+   "value": 235,
+   "target": 235,
+   "residual": null,
+   "tolerance": null,
+   "pass": true
+  },
+  {
+   "group": "prime",
+   "id": "G6",
+   "title": "Synchronisation clock z ↦ z² mod 5875: transient 2, period 220 = lcm(11, 20)",
+   "evidence": "E0",
+   "value": {
+    "orders": [
+     23,
+     100,
+     11,
+     20
+    ],
+    "transient": 2,
+    "period": 220,
+    "mod47": 11,
+    "mod125": 20,
+    "distinct": 220,
+    "bigint": true
+   },
+   "target": {
+    "orders": [
+     23,
+     100,
+     11,
+     20
+    ],
+    "transient": 2,
+    "period": 220,
+    "mod47": 11,
+    "mod125": 20,
+    "distinct": 220
+   },
+   "residual": null,
+   "tolerance": null,
+   "pass": true
+  },
+  {
+   "group": "prime",
+   "id": "G7",
+   "title": "Joint operator U = Γ ⊗ T stepped with the clock: U²²⁰ = Γ²²⁰ ⊗ I, within (15/17)²²⁰ of P ⊗ I",
+   "evidence": "E0+E1",
+   "value": {
+    "U220_minus_Gamma220": 1.09553233272846e-15,
+    "U220_minus_P": 6.272640227644869e-13,
+    "U110_minus_PT110": 6.045319462546687e-7,
+    "U110_minus_P": 0.8699119200439038,
+    "protectedWeight0": 0.37824464801415975,
+    "success220": 0.37824464801415975,
+    "returnFidelity220": 1.0000000000000049
+   },
+   "target": {
+    "U220_minus_P": "≤ 1.0998e-12"
+   },
+   "residual": 1.09553233272846e-15,
+   "tolerance": 1e-13,
+   "pass": true
+  },
+  {
+   "group": "matrix",
+   "id": "H1",
+   "title": "SHA-256 test vector (FIPS 180-2, \"abc\")",
+   "evidence": "E1",
+   "value": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+   "target": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+   "residual": null,
+   "tolerance": null,
+   "pass": true
+  },
+  {
+   "group": "matrix",
+   "id": "H2",
+   "title": "sorted-json-v1 canonicalisation is independent of key order",
+   "evidence": "E1",
+   "value": "{\"a\":[2,{\"x\":0,\"y\":1}],\"b\":1}",
+   "target": "{\"a\":[2,{\"x\":0,\"y\":1}],\"b\":1}",
+   "residual": null,
+   "tolerance": null,
+   "pass": true
+  },
+  {
+   "group": "matrix",
+   "id": "H3",
+   "title": "Matrix gate arithmetic: T⁸ = I, T² = S, T⁴ = Z, H² = CX² = SW² = I",
+   "evidence": "E0+E1",
+   "value": {
+    "T8": 3.477763656540197e-16,
+    "T2": 1.3597399555105182e-16,
+    "T4": 2.342840229615247e-16,
+    "H2": 2.3469468764647177e-16,
+    "CX2": 0,
+    "SW2": 0
+   },
+   "target": 0,
+   "residual": 3.477763656540197e-16,
+   "tolerance": 1e-15,
+   "pass": true
+  },
+  {
+   "group": "matrix",
+   "id": "H4",
+   "title": "One clock tick ωτ = π/4 on an encoded Matrix qubit is exactly the T gate, under leak and recovery",
+   "evidence": "E0+E1",
+   "value": {
+    "infidelity": 4.6629367034256575e-15,
+    "purity_min": 0.9999999999999901
+   },
+   "target": 0,
+   "residual": 4.6629367034256575e-15,
+   "tolerance": 1e-12,
+   "pass": true
+  },
+  {
+   "group": "matrix",
+   "id": "H5",
+   "title": "Receipt replay tells apart verified, order-dependent, stale, tampered, re-sealed and measured receipts",
+   "evidence": "E1",
+   "value": {
+    "ok": "REPLAY-VERIFIED",
+    "order": "ORDER-DEPENDENT",
+    "stale": "REPLAY-MISMATCH",
+    "tampered": "DIGEST-MISMATCH",
+    "resealed": "REPLAY-MISMATCH",
+    "measured": "MEASURED-CONSISTENT"
+   },
+   "target": {
+    "ok": "REPLAY-VERIFIED",
+    "order": "ORDER-DEPENDENT",
+    "stale": "REPLAY-MISMATCH",
+    "tampered": "DIGEST-MISMATCH",
+    "resealed": "REPLAY-MISMATCH",
+    "measured": "MEASURED-CONSISTENT"
+   },
+   "residual": null,
+   "tolerance": null,
+   "pass": true
+  },
+  {
+   "group": "matrix",
+   "id": "H6",
+   "title": "A clock-tick receipt exported back to the Matrix passes the deployed importer and replays exactly",
+   "evidence": "E1",
+   "value": {
+    "status": "REPLAY-VERIFIED",
+    "word": "Z S T",
+    "residual": 0,
+    "deployed_importer": true
+   },
+   "target": {
+    "status": "REPLAY-VERIFIED",
+    "word": "Z S T",
+    "deployed_importer": true
+   },
+   "residual": 0,
+   "tolerance": 0,
+   "pass": true
+  }
+ ],
+ "digest": "c3d8adda9af30a4d762b281208a47feff826dfbb1e0611e01d271ff9ef42d45c"
+}
