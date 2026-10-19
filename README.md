@@ -76,9 +76,11 @@ What `validation/tqgnn_validation.py` establishes:
   metric lapses 1, √0.82, √0.74.
 - **Prime clock.** The periods 47 and 235 are confirmed.
 
-Derivations are in [`docs/formalism.md`](docs/formalism.md). The status of
-every claim, the modelling choices and what is not established are in
-[`docs/scope.md`](docs/scope.md).
+Derivations are in [`docs/tqgnn-formalism.md`](docs/tqgnn-formalism.md). The
+status of every claim, the modelling choices and what is not established are in
+[`docs/scope.md`](docs/scope.md). The dynamic formalism (clock generator, E47
+contraction, temporal QGNN, click time) is in [`docs/FORMALISM.md`](docs/FORMALISM.md),
+with its integrator in [`src/time_dynamics.py`](src/time_dynamics.py).
 
 ## Run
 
@@ -100,6 +102,7 @@ The TQGNN package needs Python 3.10+:
 pip install -r requirements.txt
 python validation/e47_spacetime_prima_facie.py   # 26 checks
 python validation/tqgnn_validation.py            # 36 checks, about a minute
+python -m unittest tests.test_time_dynamics      # src/time_dynamics.py
 python tools/golden.py --check                   # the clock's reference values, recomputed
 python tools/golden.py                           # rewrite data/golden.json
 ```
@@ -127,7 +130,11 @@ audit/                        precision audit of both Matrix implementations
 tqgnn/                        the TQGNN in Python: carrier, spacetime, node, network,
                               stochastic and jump unravellings, Lindblad, clocks, learning
 validation/                   canonical spacetime runner (unchanged) and TQGNN validator
-docs/                         formalism and scope
+src/time_dynamics.py          Lindblad generator, projected Hamiltonian, RK4 step
+tests/                        engine.test.js (the clock), test_time_dynamics.py (src/)
+docs/FORMALISM.md             the dynamic formalism
+docs/tqgnn-formalism.md       TQGNN derivations
+docs/scope.md                 status of every claim
 results/                      last validator output
 ```
 
