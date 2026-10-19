@@ -8,7 +8,7 @@ class QuantumTimeTests(unittest.TestCase):
         rho = np.diag([1.,0.]).astype(complex)
         d = lindblad_rhs(rho,h)
         self.assertAlmostEqual(np.trace(d).real,0.)
-        self.assertLess(np.linalg.norm(d+d.conj().T),1e-12)
+        self.assertLess(np.linalg.norm(d-d.conj().T),1e-12)
 
     def test_projected_invariance(self):
         p = np.diag([1.,0.]).astype(complex)
