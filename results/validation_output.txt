@@ -1,0 +1,53 @@
+
+# A. Carrier as a graph: E47 is a spectral band, Gamma is a 4-local filter
+PASS  A1 Casimir spectrum and eigenspace dimensions | {0: 1, 2: 9, 6: 25, 12: 28, 20: 27, 30: 22, 42: 13}
+PASS  A2 rank P = 47 | tr P = 47.000000000000
+PASS  A3 C is a graph operator whose edges are face diagonals e_a - e_b | 6 edge steps
+PASS  A4 graph has 13 components (planes m1+m2+m3 = M) | [1, 3, 6, 10, 15, 18, 19, 18, 15, 10, 6, 3, 1]
+PASS  A5 Gamma = I - K^2/99144 vanishes beyond graph distance 4 | max |Gamma_uv|, d > 4: 0.0
+PASS  A6 ||Gamma^n - P||_2 = (15/17)^n, n = 1..10 | max |err| = 4.44e-16; (15/17)^220 = 1.0998e-12
+PASS  A7 only (6, 30) has Casimir gap 24 | [(6, 30)]
+
+# B. Time formalism: metric, lapse, time-chain identity
+PASS  B1 pullback metric B4^dag (P6 - P0) B4 = diag(-1, 2, 8, 2) | diag = [-1.0, 2.0, 8.0, 2.0], intertwiner residual 1.65e-15
+PASS  B2 lapse N = sqrt(1 - 2v1^2 - 8v2^2 - 2v3^2); spacelike worldline rejected | N(0.3,0,0) = 0.905538513814
+PASS  B3 time-chain identity: d rho/dt = N(t) L_tau rho equals proper-time evolution at tau(t) | max |delta rho| = 1.90e-11
+PASS  B4 time direction u lies outside E47: K^2 u = 32400 u, Gamma u = 0.6732026144 u | <u|Gamma|u> = 0.6732026144, P u = 4.3e-16
+
+# C. Node: E47 clock-memory unit
+PASS  C1 V inside E47, W outside, W^dag V = 0, [V W] orthonormal
+PASS  C2 exact reduction: 125-dim carrier dynamics = 4-dim logical (x) flag dynamics | max |delta rho| = 1.91e-10, retention 1.09e-11
+PASS  C3 clock H = omega C/24: <O> = cos(omega tau) with Tr(P rho) = 1 | cos error 3.9e-11
+PASS  C4 matched recovery, c = 1: retention 99.019608 % / 99.751244 %, clicks 0.19607843 / 0.09950249 | {20.0: (np.float64(99.019608), np.float64(0.19607843)), 40.0: (np.float64(99.751244), np.float64(0.09950249))}
+PASS  C5 detuned leak q = 4c^2/(gamma^2 + 8c^2 + 4 Delta^2) per clock branch | Delta_a = 0.5, Delta_b = 1.0; max err 3.3e-16
+PASS  C6 recovery clicks are sub-Poissonian: F = 1 - 24c^2 gamma^2/(gamma^2 + 8c^2)^2 | F(c=1, gamma=20) = 0.942330, F(c=1, gamma=4) = 0.333333
+PASS  C7 linear clock + recovery: clock dephases at gamma c^2 |z_a - z_b|^2 / 2 (second order in c/gamma) | rate rel. error -1.11e-02 (c=0.1), -2.79e-03 (c=0.05); freq error -2.4e-07
+PASS  C8 matched spectral clock (equal detunings): clock coherence exactly preserved under leak + recovery | dephasing -2.2e-16, |coherence| - 1/2 = 1.2e-11, f(42) moved to 3.0
+
+# D. Network: temporal quantum graph neural network
+PASS  D1 each node's clock phase reads its own proper time (time dilation) | tau(12) = [12.0, 10.866462, 10.913541], max err 1.2e-13
+PASS  D2 full network (leak, recovery, exchange, Ising, node lapses) stays a density matrix | trace err 2.2e-16, min eigenvalue -2.8e-10
+PASS  D3 equal lapses: network obeys the time-chain identity | max |delta rho| = 1.3e-11
+PASS  D4 message passing between clocks on different worldlines is detuned by (N_j - N_k) omega | max transfer 0.2027647378 = 4J^2/(4J^2 + delta^2) = 0.2027647378, delta = 0.188923
+
+# S. From stochastic to dynamic: detection efficiency eta and recovery strength gamma
+PASS  S1 eta = 0: no record, conditional state = GKSL solution (dynamic system) | max |delta rho| = 1.6e-10
+PASS  S2 unravelling invariance: E[rho_c] = rho for eta = 0.25, 0.5, 0.75, 1 | max |z| = 2.01 over retention and clock coherence
+PASS  S3 detected clicks have mean eta * integral of lambda(t) | exact mean 2.1218 at eta = 1; max |z| = 1.29
+PASS  S4 conditional variance rises with eta from 0 (stochastic) and vanishes at eta = 0 (dynamic) | {'0.0': 0.0, '0.25': 0.000612, '0.5': 0.001403, '0.75': 0.002081, '1.0': 0.003214}
+PASS  S5 network click trajectories (eta = 1) average to the network GKSL flow | 2000 trajectories, 64-dim, max |z| = 2.48
+PASS  S6 click statistics thin exactly: rate eta*lambda, Fano 1 + eta(F - 1) | max err 3.0e-10
+PASS  S7 click clock: relative error of tau from counts = sqrt(F_eta/(eta lambda tau)) | eta=1: 0.0397 vs 0.0408; eta=0.5: 0.0821 vs 0.0816 (tau = 300, 1000 trajectories)
+PASS  S8 Zeno route: stronger recovery makes clicks rarer and the clock deterministic (gamma_phi ~ gamma^-3) | log-log slope -2.9817; click rate [0.66667, 0.44444, 0.24242, 0.12403] for gamma = 4, 8, 16, 32
+
+# L. Learning: the network recovers each node's lapse from clock data
+PASS  L1 uncalibrated clocks: (N_v, omega_v, J_e) has 3 flat directions (only N_v omega_v, N_e J_e seen) | rank 5 of 8; smallest singular values [2.9844e-08, 2.1767e-08, 1.8715e-08]
+PASS  L2 calibrated clocks: trained lapses equal the metric lapses | fitted [1.0, 0.9055385138, 0.8602325267] vs [1.0, 0.9055385138, 0.8602325267]; J [0.15, 0.1]
+PASS  L3 with readout noise 0.002 the lapses are still recovered to < 1e-3 | max err 4.9e-05
+
+# P. Prime clock
+PASS  P1 47-cycle on E47 has order 47 and preserves E47
+PASS  P2 combined with a 5-cycle the period is 235 = lcm(47, 5)
+
+TQGNN_TIME_PASS
+36/36 checks PASS   (54 s)

@@ -1,0 +1,418 @@
+{
+ "audit_code": "MC-MATRIX-PRECISION-AUDIT-20261019-001",
+ "title": "The Matrix Quantum Simulator: precision audit for the Quantum Clock bridge (executed)",
+ "date": "2026-10-19",
+ "auditor": "Claude (Anthropic), for Nicholas Shane Kouns",
+ "evidence_class": "E1 (each finding is reproduced by running the app's own code)",
+ "objects": [
+  {
+   "name": "The Matrix Quantum Simulator (site app)",
+   "repository": "nicholaskouns-create/nicholaskouns-create.github.io",
+   "path": "matrix-quantum-simulator/",
+   "commit": "8b2bffa013bfd90e588a37bf08fd07e1827dcd8d",
+   "sha256": {
+    "app.html": "777354cccd1929c821a03755f505698c48351c35ad7572e37124e3ecbc4ecb9c",
+    "receipt.js": "c50d849f309b78e3a5039452ff30db90b8aeca26766a6abce842065b3e577952"
+   },
+   "reproduce": "node audit/site_matrix_audit.js",
+   "findings": [
+    {
+     "id": "F1",
+     "title": "Receipt import rejects every receipt the app exports with at least one gate",
+     "severity": "high",
+     "status": "open",
+     "evidence": {
+      "import_results": {
+       "empty": "imported",
+       "bell": "rejected: Invalid circuit"
+      },
+      "cause": "valid() checks o.g, but receipt() writes each gate as o.gate; read() then uses o.gate"
+     },
+     "fix": "In receipt.js valid(), read the gate as o.gate (the two occurrences of o.g)."
+    },
+    {
+     "id": "F2",
+     "title": "run() applies gates in the order they were placed, not the column order the circuit shows",
+     "severity": "high",
+     "status": "open",
+     "evidence": {
+      "bell_then_replace_H": {
+       "before": [
+        [
+         0.7071067811865476,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0.7071067811865476,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "after": [
+        [
+         0.7071067811865476,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0.7071067811865476,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "distance": 1
+      },
+      "H_col0_S_col1": {
+       "computed": [
+        [
+         0.7071067811865476,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0.7071067811865476,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "diagram_says": [
+        [
+         0.7071067811865476,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0.7071067811865476
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "distance": 1
+      }
+     },
+     "fix": "In run(), iterate over [...ops].sort((x, y) => x.col - y.col); gates sharing a column act on different wires and commute."
+    },
+    {
+     "id": "F3",
+     "title": "Placing a two-qubit gate deletes every gate in that column, including on the untouched wire",
+     "severity": "medium",
+     "status": "open",
+     "evidence": {
+      "before": [
+       {
+        "g": "X",
+        "a": 2,
+        "b": null,
+        "col": 3
+       }
+      ],
+      "after": [
+       {
+        "g": "CX",
+        "a": 0,
+        "b": 1,
+        "col": 3
+       }
+      ]
+     },
+     "fix": "In place(), remove only gates in that column that touch the two chosen qubits."
+    },
+    {
+     "id": "F4",
+     "title": "Placing a gate does not recompute the state, so EXPORT can pair a circuit with an older statevector",
+     "severity": "medium",
+     "status": "open",
+     "evidence": {
+      "circuit": [
+       {
+        "gate": "H",
+        "targets": [
+         0
+        ],
+        "column": 0
+       }
+      ],
+      "statevector": [
+       [
+        1,
+        0
+       ],
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        0
+       ],
+       [
+        0,
+        0
+       ]
+      ],
+      "note": "H is in the circuit; the statevector is still |000>"
+     },
+     "fix": "Call run() at the start of receipt(), or recompute psi in place()."
+    },
+    {
+     "id": "F5",
+     "title": "MEASURE falls through to |111> when round-off leaves the cumulative probability below the random draw",
+     "severity": "low",
+     "status": "open",
+     "evidence": {
+      "code": "document.getElementById('shot').onclick=()=>{let u=Math.random(),k=0;while(k<7&&(u-=P(psi[k]))>=0)k++;psi=psi.map((_,i)=>C(i===k?1:0));log('",
+      "note": "with \u03a3|\u03c8|\u00b2 = 1 \u2212 1e\u221216 and u above it, k reaches 7 whatever its probability"
+     },
+     "fix": "Stop at the last basis state with nonzero probability."
+    },
+    {
+     "id": "F6",
+     "title": "The SHA-256 digest detects accidental edits but not deliberate ones: editing amplitudes and recomputing the digest passes import",
+     "severity": "note",
+     "status": "open",
+     "evidence": {
+      "note": "The Quantum Clock bridge replays the circuit to catch this (status REPLAY-MISMATCH)."
+     },
+     "fix": "Replay the circuit on import and compare to the statevector."
+    }
+   ]
+  },
+  {
+   "name": "THE MATRIX two-site MPS worker (City instrument)",
+   "repository": "nicholaskouns-create/E47-Kartekeya",
+   "path": "website/interfaces/matrix/mps-worker.js",
+   "commit": "f3562a0221dfcc7c712e49e4a600a0da9bbd4188",
+   "sha256": {
+    "mps-worker.js": "4f15ade94f30b237ac8154098fa60c3e4bdc64ef7ffe127fa35b277dc39670e3",
+    "matrix.js": "3f9adfb5e1eae228687687fe80d582a729ac222757de965c973eee36cd766b51"
+   },
+   "reproduce": "node audit/city_matrix_audit.js [path/to/mps-worker.js]",
+   "circuit": {
+    "n": 8,
+    "layers": 24,
+    "phi": 0.7,
+    "entangler": "brickwork"
+   },
+   "runs": [
+    {
+     "chi": 16,
+     "worker": {
+      "fidelity": 1.000000000000029,
+      "norm2": 1.0000000000003177,
+      "discarded_sum": 2.5826993837556843e-25,
+      "window_if_canonical": [
+       1,
+       1
+      ],
+      "inside_window": true
+     },
+     "truncating_steps": 0,
+     "steps_worse_than_schmidt_optimum": 0,
+     "max_error_ratio_to_optimum": 0,
+     "actual_over_reported_loss": null,
+     "canonical_tebd": null
+    },
+    {
+     "chi": 8,
+     "worker": {
+      "fidelity": 0.9469300053406632,
+      "norm2": 0.925369087524683,
+      "discarded_sum": 0.0977478606839222,
+      "window_if_canonical": [
+       0.9022521393160778,
+       0.9068775344106136
+      ],
+      "inside_window": false
+     },
+     "truncating_steps": 8,
+     "steps_worse_than_schmidt_optimum": 8,
+     "max_error_ratio_to_optimum": 54.30980048680574,
+     "actual_over_reported_loss": [
+      0.5210916753550909,
+      1.0905357053538915
+     ],
+     "canonical_tebd": {
+      "fidelity": 0.9944356155589167,
+      "norm2": 0.9938678347145199,
+      "discarded_sum": 0.006148212349985483,
+      "inside_window": true
+     }
+    },
+    {
+     "chi": 4,
+     "worker": {
+      "fidelity": 0.8117012639608655,
+      "norm2": 0.6956161983368615,
+      "discarded_sum": 0.3551256000703624,
+      "window_if_canonical": [
+       0.6448743999296376,
+       0.7010853813051755
+      ],
+      "inside_window": true
+     },
+     "truncating_steps": 27,
+     "steps_worse_than_schmidt_optimum": 27,
+     "max_error_ratio_to_optimum": 15.264411648130267,
+     "actual_over_reported_loss": [
+      0.3953046759278057,
+      1.7269801599118084
+     ],
+     "canonical_tebd": {
+      "fidelity": 0.9442799090139969,
+      "norm2": 0.9277084398974444,
+      "discarded_sum": 0.07490386549446518,
+      "inside_window": true
+     }
+    }
+   ],
+   "findings": [
+    {
+     "id": "M1",
+     "severity": "high",
+     "title": "Truncations are not made in canonical gauge, so the discarded weight is not the state\u2019s truncation error and the truncation is not optimal",
+     "fix": "Keep the MPS in Vidal \u0393\u03bb form, or move the orthogonality centre to the active bond (QR sweeps) before each SVD. The untruncated \u03c7 = 16 parity certificate is unaffected.",
+     "status": "open"
+    },
+    {
+     "id": "M2",
+     "severity": "medium",
+     "title": "The circuit diagram draws a T1/T\u03c6 noise box after every layer, but the worker applies the noise channel once, after the last layer",
+     "fix": "Apply the trajectory channel per layer, or draw it once at the end.",
+     "status": "open"
+    },
+    {
+     "id": "M3",
+     "severity": "low",
+     "title": "In controlled-truncation mode the validation passes whenever the error is finite",
+     "fix": "After M1, compare the fidelity with \u03a0(1 \u2212 \u03b5_k) instead.",
+     "status": "open"
+    },
+    {
+     "id": "M4",
+     "severity": "low",
+     "title": "Validation runs only for the brickwork entangler; the chain entangler has no dense reference",
+     "fix": "Add the chain ordering to exact().",
+     "status": "open"
+    },
+    {
+     "id": "M5",
+     "severity": "note",
+     "title": "hermitianEig is defined but unused",
+     "fix": "Remove it or use it.",
+     "status": "open"
+    }
+   ]
+  }
+ ],
+ "what_the_bridge_does_about_it": [
+  "Replays every imported receipt in diagram order and in placement order and reports which one the statevector matches (F2, F4, F6).",
+  "Writes each exported gate under both gate and g, so the deployed importer accepts it (F1).",
+  "Appends clock ticks after the last used column, where the two orders agree (F2, F3)."
+ ],
+ "boundary": "Software audit of two browser simulators. It makes no claim about quantum hardware. The City MATRIX parity certificate MC-MATRIX-PARITY-20260921-001 concerns the untruncated \u03c7 = 16 run and is unaffected by M1."
+}
