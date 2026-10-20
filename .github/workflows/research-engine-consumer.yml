@@ -1,0 +1,32 @@
+name: Consume Mathematical City research engine
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 12 * * 1'
+permissions:
+  contents: read
+jobs:
+  upstream-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: nicholaskouns-create/Radar
+          ref: 512a4fe5eb90f0e43c2bd569a1a6990f5241d77b
+          path: research-engine-upstream
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate upstream evidence contract
+        working-directory: research-engine-upstream
+        run: |
+          python -m pip install pytest
+          python -m pytest tests/test_research_engine.py -q
+          python - <<'PY'
+          from research_engine.sources import SOURCES
+          assert 'acicula-iq-v3' in SOURCES
+          assert SOURCES['acicula-iq-v3']['labels_verified'] is False
+          print('Pinned upstream evidence contract validated')
+          PY
