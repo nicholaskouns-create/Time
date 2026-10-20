@@ -1,5 +1,8 @@
 name: Consume Mathematical City research engine
 on:
+  push:
+    paths:
+      - '.github/workflows/research-engine-consumer.yml'
   workflow_dispatch:
   schedule:
     - cron: '17 12 * * 1'
