@@ -1,4 +1,4 @@
-# Quantum Time: dynamic formalism
+# Quantum Clock: dynamic formalism
 
 ## Clock generator
 For a finite-dimensional clock, take a Hermitian Hamiltonian H and density operator ρ. Define physical-time evolution by

@@ -10,7 +10,7 @@
   "E1": "executable reconstruction",
   "E2": "simulation"
  },
- "claim_boundary": "Finite-dimensional mathematics and simulation of a declared model: the E47 carrier, a 4-dim clock-memory node, its GKSL dynamics, a two- or three-node TQGNN, and the 3-qubit Matrix receipt protocol. It is not a physical clock, makes no hardware, timing or experimental claim, and the metric-to-phase bridge (ω·Δτ per tick) is a declared convention.",
+ "claim_boundary": "The E47 Quantum Clock: a finite-dimensional quantum clock with phase-based elapsed-time readout, a 4-dim clock-memory node, matched GKSL dynamics, a two- or three-node TQGNN, and the 3-qubit Matrix receipt protocol. Evidence comprises mathematical derivation and numerical quantum simulation. Laboratory hardware realization and calibration to physical seconds remain open; the metric-to-phase bridge (ω·Δτ per tick) specifies the readout convention.",
  "golden": {
   "schema": "QCLOCK-GOLDEN-1.0",
   "generator_sha256": "1d3d7ed95006d3b2777a1d1e70b339952a7ced4c1fb0a27893685caab7ee928f",

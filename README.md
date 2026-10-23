@@ -1,5 +1,5 @@
-# Time
-Quantum Time Derived
+# E47 Quantum Clock
+Phase readout, protected clock memory and networked quantum dynamics
 
 **[Open the Quantum Clock](https://nicholaskouns-create.github.io/Time/)**
 
@@ -142,7 +142,6 @@ results/                      last validator output
 
 E47 framework and kernel: Nicholas Shane Kouns, AIMS Research Institute. Clock
 construction, engine, instrument and TQGNN: Claude (Anthropic), with Nicholas
-Shane Kouns, 19 October 2026. Mathematics and simulation of a declared model
-only; no hardware, timing or experimental claim.
+Shane Kouns, 19 October 2026. Quantum clock construction with phase-based elapsed-time readout, validated in mathematics and numerical quantum simulation. Laboratory hardware realization and calibration to physical seconds remain open.
 
 [MIT License](LICENSE)

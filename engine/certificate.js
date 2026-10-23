@@ -249,7 +249,7 @@ export async function runCertificate({ golden = null, onProgress = null, environ
     certificate_code: CERTIFICATE_ID, title: 'Quantum Clock — E47 clock-memory unit, TQGNN network and Matrix bridge (executed)', engine: ENGINE_VERSION,
     status: `${passed}/${checks.length} PASS`, passed, total: checks.length,
     evidence_classes: { E0: 'exact proof', E1: 'executable reconstruction', E2: 'simulation' },
-    claim_boundary: 'Finite-dimensional mathematics and simulation of a declared model: the E47 carrier, a 4-dim clock-memory node, its GKSL dynamics, a two- or three-node TQGNN, and the 3-qubit Matrix receipt protocol. It is not a physical clock, makes no hardware, timing or experimental claim, and the metric-to-phase bridge (ω·Δτ per tick) is a declared convention.',
+    claim_boundary: 'The E47 Quantum Clock: a finite-dimensional quantum clock with phase-based elapsed-time readout, a 4-dim clock-memory node, matched GKSL dynamics, a two- or three-node TQGNN, and the 3-qubit Matrix receipt protocol. Evidence comprises mathematical derivation and numerical quantum simulation. Laboratory hardware realization and calibration to physical seconds remain open; the metric-to-phase bridge (ω·Δτ per tick) specifies the readout convention.',
     golden: golden ? { schema: golden.schema, generator_sha256: golden.generator_sha256, environment: golden.environment } : null,
     environment, elapsed_ms: Math.round((globalThis.performance || Date).now() - t0), checks,
   };
