@@ -1,0 +1,30 @@
+name: Cora E47 versus PCA benchmark
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - noesis/cora_e47_benchmark.py
+      - .github/workflows/cora-e47-benchmark.yml
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned dependencies
+        run: pip install numpy==2.2.6 scipy==1.15.3 scikit-learn==1.6.1
+      - name: Execute benchmark
+        run: python noesis/cora_e47_benchmark.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cora-e47-results
+          path: |
+            cora-e47-results.json
+            cora-graph-aware-results.json
