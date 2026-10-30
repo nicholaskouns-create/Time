@@ -98,3 +98,14 @@ test('Matrix bridge: tick receipt for 1..8 ticks uses the shortest T word', asyn
   assert.equal(v.status, 'REPLAY-VERIFIED');
   await assert.rejects(Rc.matrixReceiptWithTicks({ ...src, circuit: [...circuit, { gate: 'X', targets: [1], column: 6 }] }, 0, 7), /8 columns/);
 });
+
+
+test('MODSYNC link preserves private validator and provides a labeled public record', () => {
+  const html = readFileSync(resolve(root, 'index.html'), 'utf8');
+  const line = html.split('\n').find((s) => s.includes('MC-E47-MODSYNC-20261015-001'));
+  assert.ok(line, 'MODSYNC certificate reference is present');
+  assert.ok(line.includes('https://github.com/nicholaskouns-create/Time/blob/main/README.md'), 'public README record remains navigable');
+  assert.ok(line.includes('https://drive.google.com/file/d/1-bCyEuWcN1rtRb1IJF02O8tTe7RbmaEC/view'), 'original private validator is preserved');
+  assert.ok(line.includes('validator on Drive (restricted)'), 'restricted permission is disclosed');
+  assert.ok(line.includes('not a substitute for the private validator'), 'public record is not presented as validator');
+});
