@@ -43,7 +43,7 @@ const finding = (id, title, severity, evidence, fix, open = true) => findings.pu
     try { await ctx.MatrixReceipt.import(r); out[name] = 'imported'; } catch (e) { out[name] = 'rejected: ' + e.message; }
   }
   finding('F1', 'Receipt import rejects every receipt the app exports with at least one gate', 'high',
-    { import_results: out, cause: 'valid() checks o.g, but receipt() writes each gate as o.gate; read() then uses o.gate' },
+    { import_results: out, contract: 'canonical gate field or a consistent legacy g alias' },
     'In receipt.js valid(), read the gate as o.gate (the two occurrences of o.g).', out.bell !== 'imported');
 }
 // F2: execution order is placement order, not diagram order
@@ -71,7 +71,7 @@ const finding = (id, title, severity, evidence, fix, open = true) => findings.pu
   E.ops = []; E.run(); E.setPick('H'); E.place(0, 0);
   const r = await ctx.MatrixReceipt.export();
   finding('F4', 'Placing a gate does not recompute the state, so EXPORT can pair a circuit with an older statevector', 'medium',
-    { circuit: r.circuit, statevector: r.statevector, note: 'H is in the circuit; the statevector is still |000>' },
+    { circuit: r.circuit, statevector: r.statevector, note: 'State exported after placing H at column 0' },
     'Call run() at the start of receipt(), or recompute psi in place().', Math.abs(r.statevector[0][0] - 1) < 1e-12);
 }
 // F5: measurement sampling round-off edge
@@ -82,9 +82,15 @@ const finding = (id, title, severity, evidence, fix, open = true) => findings.pu
     { code: shot.slice(0, 140), note: 'with Σ|ψ|² = 1 − 1e−16 and u above it, k reaches 7 whatever its probability' },
     'Stop at the last basis state with nonzero probability.', shot.includes('while(k<7&&(u-=P(psi[k]))>=0)k++'));
 }
-// F6: digest is integrity, not authenticity
-finding('F6', 'The SHA-256 digest detects accidental edits but not deliberate ones: editing amplitudes and recomputing the digest passes import', 'note',
-  { note: 'The Quantum Clock bridge replays the circuit to catch this (status REPLAY-MISMATCH).' }, 'Replay the circuit on import and compare to the statevector.');
+// F6: alter a normalized state, recompute its digest, and require replay rejection.
+{
+ const ctx=boot(),E=ctx.engine;E.ops=[{g:'H',a:0,col:0},{g:'CX',a:0,b:1,col:1}];E.run();
+ const r=JSON.parse(JSON.stringify(await ctx.MatrixReceipt.export()));r.statevector=Array.from({length:8},(_,i)=>[i===1?1:0,0]);
+ const canonical=x=>Array.isArray(x)?'['+x.map(canonical).join(',')+']':x&&typeof x==='object'?'{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canonical(x[k])).join(',')+'}':JSON.stringify(x);
+ const {integrity,...payload}=r;r.integrity.digest=sha256(canonical(payload));
+ let rejected=false;try{await ctx.MatrixReceipt.import(r);}catch(e){rejected=/replay mismatch/.test(e.message);}
+ finding('F6','A recomputed digest must not hide a circuit/state mismatch','note',{replay_rejected:rejected},'Replay the circuit before importing the state.',!rejected);
+}
 
 const report = { audit_code: 'MC-MATRIX-PRECISION-AUDIT-20261019-001', object: 'The Matrix Quantum Simulator (site app)', path: 'matrix-quantum-simulator/', date: '2026-10-19', method: 'the app’s engine and receipt code executed unmodified in a Node vm',
   source: appDir || SRC_URL, sha256: { 'app.html': sha256(html), 'receipt.js': sha256(receiptSrc) }, findings };

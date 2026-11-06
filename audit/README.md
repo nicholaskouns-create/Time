@@ -17,6 +17,14 @@ site audit's F1–F5 read `resolved` as soon as a fix is merged there. It also
 reports the SHA-256 of the files it ran, to compare with the ones pinned in the
 JSON record.
 
+## Local corrections (2026-11-06)
+
+The corrected site source now passes F1–F6: canonical and legacy gate fields round-trip, execution follows column order, placement preserves unrelated wires, edits recompute the state, measurement uses the actual total probability, and receipt import replays the circuit before accepting a state.
+
+The City worker uses mixed-canonical SVD sweeps before each two-site truncation. Its χ=8 fidelity is 0.9944356156 (formerly 0.9469300053), and its χ=4 fidelity is 0.9442799090 (formerly 0.8117012640). The independent dense Schmidt audit finds zero suboptimal truncations and reported norm losses agree with measured losses. Validation enforces an accumulated state-error bound and norm-retention identity. Chain ordering has a dense reference; the diagram shows the single final noise channel actually executed.
+
+The audit commands above inspect the supplied source and report current statuses. The tables below preserve the original findings and original measurements; they are not the corrected worker's results. A digest still provides no authenticity guarantee; replay verifies circuit/state consistency only.
+
 ## The site app (`matrix-quantum-simulator/`)
 
 | id | finding | evidence | fix |
