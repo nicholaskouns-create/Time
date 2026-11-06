@@ -4,6 +4,7 @@
 //   node audit/city_matrix_audit.js [path/to/mps-worker.js]   (default: fetched from GitHub)
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { dirname, join } from 'node:path';
 import { cmat, cmul, cadj, hermEig } from '../engine/linalg.js';
 
 const SRC_URL = 'https://raw.githubusercontent.com/nicholaskouns-create/E47-Kartekeya/main/website/interfaces/matrix/mps-worker.js';
@@ -47,7 +48,7 @@ const fidelity = (re, im) => { let nr = 0, or = 0, oi = 0; for (let i = 0; i < N
 const probe = vm.runInContext(`(function(n,layers,phi,chi){
   const nrm2=v=>v.reduce((s,z)=>s+z[0]*z[0]+z[1]*z[1],0); let m=init(n),steps=[],disc=0;
   for(let k=0;k<layers;k++){ for(let q=0;q<n;q++){m[q]=one(m[q],H());m[q]=one(m[q],R(phi))}
-    for(let q=k%2;q<n-1;q+=2){ const before=dense(m), mm=m.slice(), [ea,eb]=two(mm[q],mm[q+1],CNOT,1<<n); mm[q]=ea; mm[q+1]=eb; const ex=dense(mm);
+    for(let q=k%2;q<n-1;q+=2){ if(typeof centerBond==='function')centerBond(m,q); const before=dense(m), mm=m.slice(), [ea,eb]=two(mm[q],mm[q+1],CNOT,1<<n); mm[q]=ea; mm[q+1]=eb; const ex=dense(mm);
       const [a,b,t]=two(m[q],m[q+1],CNOT,chi); m[q]=a; m[q+1]=b; disc+=t.discarded; const after=dense(m);
       let d=0; for(let i=0;i<after.length;i++) d+=(after[i][0]-ex[i][0])**2+(after[i][1]-ex[i][1])**2;
       steps.push({bond:q,reported_rel:t.discarded,norm2_before:nrm2(before),norm2_after:nrm2(after),err2:d,exact_after:ex}); } }
@@ -72,11 +73,27 @@ for (const chi of [16, 8, 4]) {
     truncating_steps: trunc.length, steps_worse_than_schmidt_optimum: worse, max_error_ratio_to_optimum: maxRatio, actual_over_reported_loss: trunc.length ? lossRatio : null,
     canonical_tebd: canon ? { fidelity: fc.fidelity, norm2: fc.norm2, discarded_sum: dc, inside_window: fc.norm2 >= 1 - dc - 1e-12 && fc.norm2 <= Math.exp(-dc) + 1e-12 } : null });
 }
+// Verify the production handler uses the same gauge-controlled path.
+let production;ctx.postMessage=x=>{production=x;};
+ctx.onmessage({data:{n,layers,phi,chi:8,validate:true}});
+const tested=out.runs.find(r=>r.chi===8);
+let overlapRe=0,overlapIm=0;for(let i=0;i<N;i++){const [r,j]=production.statevector[i];overlapRe+=exact.re[i]*r+exact.im[i]*j;overlapIm+=exact.re[i]*j-exact.im[i]*r;}
+const productionFidelity=(overlapRe**2+overlapIm**2)/production.norm;
+let chain;ctx.postMessage=x=>{chain=x;};ctx.onmessage({data:{n:6,layers:4,phi,chi:8,validate:true,entangler:'chain'}});
+const gaugeVerified=out.runs.every(r=>r.steps_worse_than_schmidt_optimum===0)&&Math.abs(productionFidelity-tested.worker.fidelity)<1e-9;
+out.production={fidelity:productionFidelity,validation:production.validation,truncation:production.truncation,chain_validation:chain.validation};
+// Exercise the circuit renderer: the worker applies one channel after the circuit.
+const uiSrc=process.argv[2]?readFileSync(join(dirname(process.argv[2]),'matrix.js'),'utf8'):await fetchText(SRC_URL.replace('mps-worker.js','matrix.js'));
+const circuit={innerHTML:''};ctx.$=()=>circuit;
+vm.runInContext(uiSrc.slice(uiSrc.indexOf('function drawCircuit('),uiSrc.indexOf('function renderPrism(')),ctx);
+ctx.drawCircuit({n:6,layers:4,entangler:'brickwork',noise:'trajectory'});
+let noisy;ctx.postMessage=x=>{noisy=x;};ctx.onmessage({data:{n:6,layers:4,phi,chi:8,noise:'trajectory',g1:.03,gphi:.04}});
+const finalChannel=(circuit.innerHTML.match(/𝒩\(T1,Tφ\)/g)||[]).length===1&&noisy.noise.placement==='after-circuit';
 out.findings = [
-  { id: 'M1', severity: 'high', title: 'Truncations are not made in canonical gauge, so the discarded weight is not the state’s truncation error and the truncation is not optimal', fix: 'Keep the MPS in Vidal Γλ form, or move the orthogonality centre to the active bond (QR sweeps) before each SVD. The untruncated χ = 16 parity certificate is unaffected.' },
-  { id: 'M2', severity: 'medium', title: 'The circuit diagram draws a T1/Tφ noise box after every layer, but the worker applies the noise channel once, after the last layer', fix: 'Apply the trajectory channel per layer, or draw it once at the end.' },
-  { id: 'M3', severity: 'low', title: 'In controlled-truncation mode the validation passes whenever the error is finite', fix: 'After M1, compare the fidelity with Π(1 − ε_k) instead.' },
-  { id: 'M4', severity: 'low', title: 'Validation runs only for the brickwork entangler; the chain entangler has no dense reference', fix: 'Add the chain ordering to exact().' },
-  { id: 'M5', severity: 'note', title: 'hermitianEig is defined but unused', fix: 'Remove it or use it.' },
+ {id:'M2',severity:'medium',status:finalChannel?'resolved':'open',title:'Noise diagram must match the final channel applied by the worker'},
+ {id:'M1',severity:'high',status:gaugeVerified?'resolved':'open',title:'Truncations must be Schmidt-optimal in canonical gauge'},
+ {id:'M3',severity:'low',status:production.validation?.pass&&Number.isFinite(production.validation.tolerance)&&production.validation.tolerance===production.truncation.state_error_bound+1e-9?'resolved':'open',title:'Controlled-truncation validation must enforce a quantified bound'},
+ {id:'M4',severity:'low',status:chain.validation?.pass?'resolved':'open',title:'Chain entangler needs dense-reference validation'},
+ {id:'M5',severity:'note',status:src.includes('function hermitianEig(')?'open':'resolved',title:'Unused hermitianEig'},
 ];
 console.log(JSON.stringify(out, null, 1));
