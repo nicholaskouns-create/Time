@@ -1,4 +1,7 @@
 # E47 Quantum Clock
+
+> **Current licensing:** [All Rights Reserved](LICENSE) for original material owned by Nicholas Shane Kouns. No new reuse permission is granted. Previously granted licenses and third-party/public-domain rights remain unaffected.
+
 Phase readout, protected clock memory and networked quantum dynamics
 
 **[Open the Quantum Clock](https://nicholaskouns-create.github.io/Time/)**
@@ -144,7 +147,7 @@ E47 framework and kernel: Nicholas Shane Kouns, AIMS Research Institute. Clock
 construction, engine, instrument and TQGNN: Claude (Anthropic), with Nicholas
 Shane Kouns, 19 October 2026. Quantum clock construction with phase-based elapsed-time readout, validated in mathematics and numerical quantum simulation. Laboratory hardware realization and calibration to physical seconds remain open.
 
-[MIT License](LICENSE)
+[All Rights Reserved](LICENSE)
 
 
 ## E47 spectral and noiseless-subsystem certificate (2026-10-24)
