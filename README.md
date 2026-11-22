@@ -162,3 +162,12 @@ Shane Kouns, 19 October 2026. Quantum clock construction with phase-based elapse
 [The E₄₇ spectral kernel · formalism and verification](e47-spectral-kernel/README.md)
 
 [Spin, weight blocks and the matched-clock illustration](research/e47/clock-proofs/README.md)
+
+
+<!-- FUN-WITH-EINSTEIN-2026 -->
+### 🪐 Fun With Einstein · Interactive spectral & quantum lab
+
+[Launch Fun With Einstein](https://nicholaskouns-create.github.io/fun-with-einstein/) · [Source & Python/Lean/Coq proof modules](https://github.com/nicholaskouns-create/E47-Kartekeya/tree/main/docs/fun-with-einstein) · [CI compiler status](https://github.com/nicholaskouns-create/E47-Kartekeya/actions/workflows/fun-with-einstein.yml).
+
+Fivefold C₅ eigenvalue ratio = φ⁻²; 125D Casimir E₄₇ projector; 250D quantum-ancilla probability α=47/(125φ²); stationary Einstein-equation recovery. Spectral simulation and gravitational statements have different evidence classes.
+<!-- /FUN-WITH-EINSTEIN-2026 -->
