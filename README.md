@@ -24,6 +24,7 @@ network runs as a stochastic click process and as a deterministic flow.
 | TQGNN validator | **36/36 PASS** |
 | Canonical spacetime runner | **26/26 PASS** |
 | JavaScript engine against the Python TQGNN package | parity to 10⁻¹⁴, through `data/golden.json` |
+| Dial certificate `MC-E47-DIAL-20261126-001` | **12/12 PASS** in your browser and in Actions; NumPy replay **13/13** against `dial/dial_data.json` |
 
 ## What it is built from
 
@@ -134,6 +135,7 @@ engine/automate.js            sweeps, CSV, permalinks
 tools/                        qclock-cli.js (the engine, headless), golden.py (reference values)
 data/golden.json              reference values from the Python TQGNN package (exact expm propagation)
 data/certificate.json         the committed certificate
+dial/                         A Dial of Forty-Seven Hours: page, certificate, NumPy replay, data, plates
 audit/                        precision audit of both Matrix implementations
 tqgnn/                        the TQGNN in Python: carrier, spacetime, node, network,
                               stochastic and jump unravellings, Lindblad, clocks, learning
@@ -144,6 +146,22 @@ docs/FORMALISM.md             the dynamic formalism
 docs/tqgnn-formalism.md       TQGNN derivations
 docs/scope.md                 status of every claim
 results/                      last validator output
+```
+
+## A Dial of Forty-Seven Hours
+
+**[Open the dial](https://nicholaskouns-create.github.io/Time/dial/)** · [source](dial/)
+
+The grading S = (18I − C)P/12 = −XP/6 splits E47 into 25 states of total spin 2 and 22 of
+total spin 5, with Tr S = 3. Every pairing of the two sides leaves at least three states
+unpaired, no nonzero pairing commutes with SU(2), and a clock that commutes with SU(2) shows
+at most seven distinct hours. The clock's own hand is this grading: f(C)P = ω(¾P − ½S), and
+one 1/47 turn is U₀ = ζI₂₅ ⊕ I₂₂ up to a global phase. The prime 47-cycle shows all 47
+hours, so it cannot commute with SU(2) in any basis.
+
+```
+node --test tests/dial.test.js     # 12 checks, on this engine
+python dial/verify_dial.py          # independent NumPy replay against dial/dial_data.json
 ```
 
 ## Credits
