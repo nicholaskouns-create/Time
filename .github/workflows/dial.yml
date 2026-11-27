@@ -1,0 +1,30 @@
+name: Dial of Forty-Seven Hours
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dial:
+    name: Dial certificate on the engine, independent NumPy replay
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Dial certificate on the clock's engine (12 checks)
+        run: node --test tests/dial.test.js
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install NumPy
+        run: pip install "numpy>=1.26"
+      - name: Independent NumPy replay against dial/dial_data.json
+        run: python dial/verify_dial.py
