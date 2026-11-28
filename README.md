@@ -1,3 +1,6 @@
+
+> **[Universal Recursive Identity Theorem](https://nicholaskouns-create.github.io/Identity/leri/universal-invariant/)** — Complete continuous invariant factorization, quotient identity and 125→47→5 spectral descent. Analytic proof and computational exhibit; new formal compiler status separate.
+
 > ⚛️ **[E₄₇ Φ₄ LIVE QUANTUM CIRCUIT](https://nicholaskouns-create.github.io/qsvt-phi4/)** · [Full 125D → 250D → 500D circuit](https://nicholaskouns-create.github.io/E47-Kartekeya/interfaces/qsvt-phi4-circuit/) · [Exact complementary factorization + reproducible NumPy certificate](https://github.com/nicholaskouns-create/E47-Kartekeya/tree/main/research/e47/qsp_phi4). Shared derivation; no independent application benchmark inferred.
 
 # E47 Quantum Clock
